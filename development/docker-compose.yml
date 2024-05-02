@@ -1,0 +1,12 @@
+# NGLOverlay development container
+# Run SSDB as a python server exposed to port :5000 of the host machine
+version: '3'
+services:
+  # NGLoverlay
+  sprintoverlay-dev:
+    image: sprintoverlay-dev:v1
+    ports:
+      - "8070:80"
+    # mount application folder
+    volumes:
+      - /home/vladimir/Work/SprintOverlay/development/public:/usr/share/nginx/html

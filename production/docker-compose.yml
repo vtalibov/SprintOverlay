@@ -1,0 +1,19 @@
+# docker-compose version
+version: '3'
+services:
+  # NGLoverlay
+  sprintoverlay-prod:
+    image: sprintoverlay-prod:${SO_TAG}
+    ports:
+      - "80:80"
+    # mount host folder with structure as read-only
+    volumes:
+      - /home/vladimir/Work/SprintOverlay/production/pdb:/usr/share/nginx/html/pdb:ro
+  # SDB
+  ssdb-prod:
+    image: ssdb-prod:${SSDB_TAG} 
+    ports:
+      - "5000:5000"
+    # mount host folder with the sqlite3 database
+    volumes:
+      - /home/vladimir/Work/SprintOverlay/production/database:/app/database

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add New Entry</title>
+<script>
+    function searchForLigand() {
+        var ligandInput = document.getElementById("ligandInput");
+        var filter = ligandInput.value.toUpperCase();
+        var table = document.getElementById("myTable");
+        var tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            var td_ligand = tr[i].getElementsByTagName("td")[4]; // Ligand column
+            if (td_ligand) {
+                // td_ligand.innerText to not retrieve rows, hidden via CSS
+                // display:none
+                var txtValue_ligand = td_ligand.innerText;
+                // filter == "" to ensure that True, if ligandInput.value is empty
+                if (txtValue_ligand.toUpperCase().indexOf(filter) > -1 || filter == "") {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+</head>
+<body>
+<h1>SSDB - Sprint Structure DataBase</h1>
+<p>...server side of Sprint Overlay!</p>
+<h2>Add New Entry</h2>
+<form action="/add_entry" method="POST">
+    <label for="project">Project:</label><br>
+    <input type="text" id="project" name="project"><br>
+    <label for="protein">Protein:</label><br>
+    <input type="text" id="protein" name="protein"><br>
+    <label for="XtalSystem">Xtal System:</label><br>
+    <input type="text" id="XtalSystem" name="XtalSystem"><br>
+    <label for="Series">Series:</label><br>
+    <input type="text" id="Series" name="Series"><br>
+    <label for="Ligand">Ligand:</label><br>
+    <input type="text" id="Ligand" name="Ligand"><br>
+    <label for="comment">Comment:</label><br>
+    <textarea id="comment" name="comment"></textarea><br>
+    <label for="path_to_structure">Path to Structure:</label><br>
+    <input type="text" id="path_to_structure" name="path_to_structure"><br><br>
+    <input type="submit" value="Submit">
+</form>
+<h2>Current Database Entries</h2>
+<form action="/export_json" method="GET">
+    <input type="submit" value="Export JSON">
+</form>
+<input type="text" id="ligandInput" onkeyup="searchForLigand()" placeholder="Ligand ID">
+<table id="myTable">
+    <thead>
+        <tr>
+            <th>Project</th>
+            <th>Protein</th>
+            <th>Xtal System</th>
+            <th>Series</th>
+            <th>Ligand</th>
+            <th>Comment</th>
+            <th>Path to Structure</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in entries %}
+        <tr>
+            <td>{{ entry.project }}</td>
+            <td>{{ entry.protein }}</td>
+            <td>{{ entry.xtalsystem }}</td>
+            <td>{{ entry.series }}</td>
+            <td>{{ entry.ligand }}</td>
+            <td>{{ entry.comment }}</td>
+            <td>{{ entry.pathtostructure }}</td>
+            <td> <!-- New column for the Edit button -->
+                <form action="/edit_entry/{{ entry[0] }}" method="get">
+                <button type="submit">Edit</button>
+                </form>
+            </td>
+            <td>
+                <form action="/delete_entry" method="post">
+                <input type="hidden" name="entry_id" value="{{ entry[0] }}">
+                <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
