@@ -4,7 +4,7 @@ NGL Overlay is an implimentation of NGL, aiming to mimic the interface and
 functions of AstexViewer and AstexOverlay. NGL Overlay consists of two programs
 - the NGL Overlay webapp, which provides viewer functionality and access to
 overlay page for the selected structures, and SSDB - the Simple Structure Database.
-SSDB allows basic transactions with SQLite3 database file
+SSDB does basic transactions with SQLite3 database file
 containing structure-related information. SSDB serves as a back-end for NGL
 Overlay interactions with this database.
 
@@ -65,4 +65,4 @@ NGL Overlay is accessible in a local network via host IP:
 hostname -I
 ```
 
-Use port `:5000` to access SSDB interface. However, better to use another program to transact the database.
+Use port `:5000` to access SSDB interface. However, better to use a proper program to transact the database.

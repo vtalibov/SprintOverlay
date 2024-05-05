@@ -2,11 +2,10 @@
 
 ## Development container
 
-* Install Docker and Docker Compose tool (*e.g.*, on Ubuntu/Debian: `sudo apt install docker.io docker-composer`).
-* Build image. The image just contains a nginx server (`sudo docker image -t imagename:tag .`).
-* In `docker-compose.yml`, mount correct path of `./public` to
-  `/usr/share/nginx/html` of the container. You probably want to add this file
-  to `.gitignore`.
+* Install Docker and Docker Compose tool
+* Build image. The image contains just a nginx server (`sudo docker image -t imagename:tag .`).
+* In `docker-compose.yml`, mount correct path to `/public` to
+  `/usr/share/nginx/html` of the container
 * Launch the container with `sudo docker-compose up`; add flag `-d` to detach it to background.
 
 NGL Overlay would be accessible on `localhost:8080`.
@@ -15,7 +14,7 @@ Start also Python server for SSDB (`python ../SSDB/app.py`), it would be accessi
 
 ## Start without docker 
 
-Change dir to `public` and start the app via simple Python HTTP server with eased
+Change dir to `public` and start the app with a simple Python HTTP server with eased
 security settings:
 
 ```
