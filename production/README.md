@@ -1,31 +1,12 @@
 # NGL Overlay
 
-NGL Overlay is a simple GUI for NGL, aiming to mimic the interface and functions
-of Astex Viewer and Astex Overlay. NGLoverlay consists of two programs - the
-**NGLoverlay** webapp, which provides viewer functionality and access to overlay
-for the selected structures, and **SSDB** - the Simple Structure Database. SSDB
-is a webapp that allows basic transactions with SQLite3 database file containing
-structure-related information. SSDB serves as a back-end for
-NGL Overlay interactions with this database.
-
-## Architecture
-
-The application runs on a host machine as two Docker containers. Both containers
-are exposed to the host network interface.
-
-**NGL Overlay** is a static JS application, deployed in the container via nginx.
-It has read-only external access to a folder on the host. This folder contains
-structure files, with their paths relative to `./pdb` defined in the database
-file.
-
-**SSDB** is served using the Gunicorn server. Its container has an access to a host
-folder that contains the database. SSDB utilizes `sqlite3` module to
-interact with SQLite3 database.
-
-NGL Overlay interacts with SSDB via AJAX requests towards Flask endpoints.
-It retrieves a list of projects, defined in the database, and upon selection of
-a project, retrieves the corresponding structures to the overlay panel,
-clustered by ligand series.
+NGL Overlay is an implimentation of NGL, aiming to mimic the interface and
+functions of AstexViewer and AstexOverlay. NGL Overlay consists of two programs
+- the NGL Overlay webapp, which provides viewer functionality and access to
+overlay page for the selected structures, and SSDB - the Simple Structure Database.
+SSDB allows basic transactions with SQLite3 database file
+containing structure-related information. SSDB serves as a back-end for NGL
+Overlay interactions with this database.
 
 ## Deployment
 
@@ -37,11 +18,7 @@ last commit tag for the corresponding program.
 
 ### Preparations & initial database
 
-On a host machine, install `docker`, `docker-compose`, `sqlite3`. E.g., on Ubuntu/Debian:
-
-```bash
-sudo apt install docker.io docker-compose sqlite3
-```
+On a host machine, install `docker`, `docker-compose`, `sqlite3`.
 
 In the applicable directory, create the database:
 
@@ -68,16 +45,12 @@ CREATE TABLE IF NOT EXISTS my_table (
 
 In `production` (root directory), modify `docker-compose.yml` accordingly:
 
-- Specify correct image names for the respective services
-- Specify correct mount points for `./pdb` folder of NGLoverlay and `./database` folder of SSDB
+- Specify correct image names for the respective services (by default, reads from `.env` file, populated with `pipeline.sh`)
+- Specify correct mount points for `public/pdb` folder of NGLoverlay and `/database` folder of SSDB
 
-In the folder with `docker-compose.yml`, start the containers with `docker-compose` (`-d` to detach it):
+Start with `docker-compose` or `docker compose`.
 
-```bash
-sudo docker-composer up -d
-```
-
-You can always check if the applications are up and running:
+To check if the applications are up and running:
 
 ```bash
 curl localhost:80 # NGLoverlay
@@ -92,4 +65,4 @@ NGL Overlay is accessible in a local network via host IP:
 hostname -I
 ```
 
-Use port `:5000` to access SSDB web interface.
+Use port `:5000` to access SSDB interface. However, better to use another program to transact the database.

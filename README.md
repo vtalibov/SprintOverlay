@@ -9,7 +9,7 @@ Uses [NGL](https://github.com/nglviewer/ngl).
 Of note, this is a personal project that comes in handy while better
 alternatives are being sought.
 
-<img src="https://raw.githubusercontent.com/vtalibov/SprintOverlay/main/screenshot.png" width="600"/>
+<img src="https://raw.githubusercontent.com/vtalibov/SprintOverlay/main/screenshot.png" width="300"/>
 
 ## Why?
 
