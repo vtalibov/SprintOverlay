@@ -1,8 +1,8 @@
 # NGL Overlay
 
 NGL Overlay is an implementation of NGL, aiming to mimic the interface and
-functions of AstexViewer and AstexOverlay. NGL Overlay consists of two programs
-- the NGL Overlay webapp, which provides viewer functionality and access to
+functions of AstexViewer and AstexOverlay. NGL Overlay consists of two programs - 
+the NGL Overlay webapp, which provides viewer functionality and access to
 overlay page for the selected structures, and SSDB - the Simple Structure Database.
 SSDB does basic transactions with SQLite3 database file
 containing structure-related information. SSDB serves as a back-end for NGL
