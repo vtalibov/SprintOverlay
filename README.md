@@ -32,9 +32,8 @@ Good papers are:
   Design. *J. Comput. Aided Mol. Des. 2002, 16 (12), 871–881.*
   https://doi.org/10.1023/a:1023813504011.
 * Davies, T. G.; Tickle, I. J. Fragment Screening Using X-Ray Crystallography.
-  In Fragment-Based Drug Discovery and X-Ray Crystallography; Davies, T. G.,
-  Hyvönen, M., Eds.; *Springer Berlin Heidelberg: Berlin, Heidelberg, 2011; Vol.
-  317, pp 33–59.*
+  *Fragment-Based Drug Discovery and X-Ray Crystallography. 33–59.*
+  https://doi.org/10.1007/128_2011_179
 * Rose, A. S.; Hildebrand, P. W. NGL Viewer: A Web Application for Molecular
   Visualization. *Nucleic Acids Res. 2015, 43 (W1), W576-9.*
   https://doi.org/10.1093/nar/gkv402.
