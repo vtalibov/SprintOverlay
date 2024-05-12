@@ -5,15 +5,19 @@ $(document).ready(function(){
   function searchForStructure() {
     let structureInput = document.getElementById("structureInput");
     let filter = structureInput.value.toUpperCase(); // case-agnostic search
+    // if several labels are submitted, separated by semicolon.
+    let filterSet = filter.split(';');
+    console.log(filterSet);
     let tablesStructuresInSeries = document.querySelectorAll('.StructuresInSeriesTable');
     tablesStructuresInSeries.forEach(table => {
       let tr = table.getElementsByTagName('tr');
       for (i = 0; i < tr.length; i++) {
         let td = tr[i].getElementsByTagName('td')[0];
         if (td) {
-          structureLabel = td.innerText;
-          // string search
-          if (structureLabel.toUpperCase().indexOf(filter) > -1 || filter == "") {
+          structureLabel = td.innerText.toUpperCase();
+          // lambda function below to check for multiple matches
+          if (filterSet.some(searchFor => structureLabel.indexOf(searchFor) > -1) 
+            || filter == "") {
             tr[i].style.display = "";
           } else {
             tr[i].style.display = "none";
@@ -145,6 +149,7 @@ $(document).ready(function(){
                 { text: "HB", class: "", colspan: "" }
               ];
               let overlayInteractionElements = [
+                // for structure search to work, structureLabel must be the first column
                 { representation: "textboxLigandID", elementType: "structureLabel", class: "ligand-table row-header" },
                 { representation: "Visible", elementType: "checkbox", class: "" },
                 { representation: "Ribbon", elementType: "checkbox", class: "" },
@@ -202,7 +207,7 @@ $(document).ready(function(){
               let structureInput = $("<input>", {
                 type: "text",
                 id: "structureInput",
-                placeholder: "Structure ID"
+                placeholder: "Structure ID1;StructureID2"
               });
               structureInput.on('keyup', searchForStructure);
               $('#selectedInfo').append(structureInput);
