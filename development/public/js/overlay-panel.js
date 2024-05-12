@@ -1,7 +1,27 @@
 const pdbFiles = [];
 
 $(document).ready(function(){
-  
+  // function to filter tables StructuresInSeriesTable by ligands.
+  function searchForStructure() {
+    let structureInput = document.getElementById("structureInput");
+    let filter = structureInput.value.toUpperCase(); // case-agnostic search
+    let tablesStructuresInSeries = document.querySelectorAll('.StructuresInSeriesTable');
+    tablesStructuresInSeries.forEach(table => {
+      let tr = table.getElementsByTagName('tr');
+      for (i = 0; i < tr.length; i++) {
+        let td = tr[i].getElementsByTagName('td')[0];
+        if (td) {
+          structureLabel = td.innerText;
+          // string search
+          if (structureLabel.toUpperCase().indexOf(filter) > -1 || filter == "") {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    });
+  }
   function randomHexColorString() {
     let randomHex = Math.floor(Math.random() * 0xFFFFFF).toString(16);
     return '#' + randomHex.padStart(6, '0');
@@ -79,7 +99,6 @@ $(document).ready(function(){
             // add timestamp to the overlay header upon successful ajax request.
             timeStamp = new Date();
             let accessDate = $('<p>').text(`accessed on ${timeStamp.toLocaleDateString()}, ${timeStamp.toLocaleTimeString()}`)
-            $('#selectedInfo').append(accessDate);
             // Create object to store ligands by series
             let ligandsBySeries = {};
             // Organize ligands by series; populate the related dictionary.
@@ -106,8 +125,8 @@ $(document).ready(function(){
               // Create plus button for series
               let seriesTableHeader = $('<span class="series expanded"></span>');
               seriesTableHeader.click(function() {
-                  $(this).toggleClass('expanded');
-                  tableSeries.toggle();
+                $(this).toggleClass('expanded');
+                tableSeries.toggle();
               });
               seriesTableHeader.append('<strong>' + series + '</strong>');
               // Create table for ligands in series
@@ -153,24 +172,24 @@ $(document).ready(function(){
               });
               let tbody = $('<tbody></tbody>');
               $.each(ligands, function(index, ligand) {
-                  structurePathsBySeries.push(ligand.PathToStructure) 
-                  let ligandRow = $('<tr></tr>');
-                  overlayInteractionElements.forEach(interElement => {
-                    let tableCell = $('<td>');
-                    if (interElement.elementType === 'structureLabel' ) {
-                      tableCell.text(ligand.Ligand);
-                      tableCell.attr('id', interElement.representation + globalIndex)
-                    } else if (interElement.elementType === 'checkbox') {
-                      tableCell.append(createCheckbox(interElement.representation, globalIndex));
-                    } else if (interElement.elementType === 'colorpicker') {
-                      tableCell.append(createColorPicker(interElement.representation,
-                        randomHexColorString, globalIndex));
-                      }
-                      tableCell.addClass(interElement.class);
-                      ligandRow.append(tableCell);
-                    });
-                    tbody.append(ligandRow);
-                    globalIndex++;
+                structurePathsBySeries.push(ligand.PathToStructure) 
+                let ligandRow = $('<tr></tr>');
+                overlayInteractionElements.forEach(interElement => {
+                  let tableCell = $('<td>');
+                  if (interElement.elementType === 'structureLabel' ) {
+                    tableCell.text(ligand.Ligand);
+                    tableCell.attr('id', interElement.representation + globalIndex)
+                  } else if (interElement.elementType === 'checkbox') {
+                    tableCell.append(createCheckbox(interElement.representation, globalIndex));
+                  } else if (interElement.elementType === 'colorpicker') {
+                    tableCell.append(createColorPicker(interElement.representation,
+                      randomHexColorString, globalIndex));
+                    }
+                    tableCell.addClass(interElement.class);
+                    ligandRow.append(tableCell);
+                  });
+                  tbody.append(ligandRow);
+                  globalIndex++;
                 });
                 tableSeries.append(thead, tbody);
                 $('#checkboxContainer').append(seriesTableHeader);
@@ -178,6 +197,15 @@ $(document).ready(function(){
                 $('#checkboxContainer').append('<br>');
                 pdbFiles.push(...structurePathsBySeries);
               });
+              $('#selectedInfo').append(accessDate);
+              // add search box for ligands
+              let structureInput = $("<input>", {
+                type: "text",
+                id: "structureInput",
+                placeholder: "Structure ID"
+              });
+              structureInput.on('keyup', searchForStructure);
+              $('#selectedInfo').append(structureInput);
               // to ensure that event listeners in other .js scripts run only after the
               // content is completely generated by jQuery.
               // Run related code within $(document).on('contentReady', function() {}
