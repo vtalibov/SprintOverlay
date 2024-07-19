@@ -1,3 +1,4 @@
+"use strict";
 const pdbFiles = [];
 
 $(document).ready(function(){
@@ -101,7 +102,7 @@ $(document).ready(function(){
           data: JSON.stringify({ project: selectedProject }), // Pass selected project as JSON data
           success: function(jsonData) {
             // add timestamp to the overlay header upon successful ajax request.
-            timeStamp = new Date();
+            let timeStamp = new Date();
             let accessDate = $('<p>').text(`accessed on ${timeStamp.toLocaleDateString()}, ${timeStamp.toLocaleTimeString()}`)
             // Create object to store ligands by series
             let ligandsBySeries = {};
