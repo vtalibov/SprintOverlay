@@ -67,6 +67,26 @@ def add_entry():
     transact_db("INSERT INTO my_table (Project, Protein, XtalSystem, Series, Ligand, Comment, PathToStructure) VALUES (?, ?, ?, ?, ?, ?, ?)", (project, protein, XtalSystem, Series, Ligand, comment, path_to_structure))
     return redirect(url_for('index'))
 
+@app.route('/get_project_series', methods=['POST'])
+def get_project_series():
+    # AJAX request is an object with a single key-value pair: { 'project': selectedProject }
+    selected_project = request.json['Project']
+    data = query_db("SELECT DISTINCT series, project FROM my_table WHERE Project = ?", (selected_project,))
+    # jsonification, tuples are into list of dictionaries
+    result = to_json_output(data)
+    return jsonify(result)
+
+@app.route('/get_project_structures_in_series', methods=['POST'])
+def get_project_structures_in_series():
+    # AJAX request is an object with a single key-value pair: { 'project': selectedProject }
+    data = request.json
+    selected_project = data.get('Project')
+    selected_series = data.get('Series')
+    data = query_db("SELECT ligand, PathToStructure FROM my_table WHERE Project = ? AND Series = ?", (selected_project, selected_series,))
+    # jsonification, tuples are into list of dictionaries
+    result = to_json_output(data)
+    return jsonify(result)
+
 @app.route('/get_project_data', methods=['POST'])
 def get_project_data():
     # AJAX request is an object with a single key-value pair: { 'project': selectedProject }
