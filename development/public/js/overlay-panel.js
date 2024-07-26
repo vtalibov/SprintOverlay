@@ -1,37 +1,5 @@
 "use strict";
 const pdbFiles = [];
-// Two arrays below configure the ligand-in-series tables and
-// interactive elements of the overlay pane.
-let tableSeriesColumnsHeaders = [
-  { text: "Structure", class: "", colspan: "" },
-  { text: "View", class: "", colspan: "" },
-  { text: "R", class: "", colspan: "" },
-  { text: "Prot L", class: "colored", colspan: "2" },
-  { text: "Lig L", class: "", colspan: "2" },
-  { text: "Prot S", class: "colored", colspan: "2" },
-  { text: "Lig S", class: "", colspan: "2" },
-  { text: "W", class: "", colspan: "" },
-  { text: "HB", class: "", colspan: "" }
-];
-let overlayInteractionElements = [
-  // for structure search to work, structureLabel must be the first column
-  { representation: "textboxLigandID", elementType: "structureLabel", class: "ligand-table row-header" },
-  { representation: "Visible", elementType: "checkbox", class: "" },
-  { representation: "Ribbon", elementType: "checkbox", class: "" },
-  { representation: "Licorice", elementType: "checkbox", class: "colored" },
-  { representation: "Licorice", elementType: "colorpicker", class: "colored" },
-  { representation: "LigandLicorice", elementType: "checkbox", class: "" },
-  { representation: "LigandLicorice", elementType: "colorpicker", class: "" },
-  { representation: "Surface", elementType: "checkbox", class: "colored" },
-  { representation: "Surface", elementType: "colorpicker", class: "colored" },
-  { representation: "LigandSurface", elementType: "checkbox", class: "" },
-  { representation: "LigandSurface", elementType: "colorpicker", class: "" },
-  { representation: "Water", elementType: "checkbox", class: "" },
-  { representation: "Interactions", elementType: "checkbox", class: "" }
-];
-//SSDB adress
-let ssdbPortExposed = 5000
-let url = `${document.location.protocol}//${document.location.hostname}:${ssdbPortExposed}`
 
 function searchForStructure() {
   let structureInput = document.getElementById("structureInput");
@@ -50,27 +18,27 @@ function searchForStructure() {
         structureLabel = td.innerText.toUpperCase();
         // lambda function below to check for multiple matches
         if (filterSet.some(searchFor => structureLabel.indexOf(searchFor) > -1) 
-          || filter == "") {
-          tr[i].style.display = "";
-        } else {
-          tr[i].style.display = "none";
-        }
-      }
+        || filter == "") {
+      tr[i].style.display = "";
+    } else {
+      tr[i].style.display = "none";
     }
-  });
+  }
+}
+});
 }
 
 // TODO
 // define a dictionary with default colors and use them instead
 function randomHexColorString() {
   let randomHex = Math.floor(Math.random() * 0xFFFFFF).toString(16);
-  return '#' + randomHex.padStart(6, '0');
+  return `#${randomHex.padStart(6, '0')}`;
 }
 
 function createCheckbox(forRepresentation, index) {
   let checkbox = $('<input>', {
-      type: 'checkbox',
-      id: 'checkbox' + forRepresentation + index
+    type: 'checkbox',
+    id: `checkbox${forRepresentation}${index}`
   });
   return checkbox;
 }
@@ -98,12 +66,22 @@ function createColorPicker(forRepresentation, defaultColor, index) {
   });
   return colorPickerDiv;
 }
-function onLoadFunction() {
-  // function to filter tables StructuresInSeriesTable by ligands.
 
-  // Fetch projects from Flask endpoint
-  // change ssdbPortExposed to the port, exposed for SSDB app.
+async function configuration() {
+  let response = await fetch('js/config.json');
+  let config = await response.json();
+  let tableSeriesColumnsHeaders = config.tableSeriesColumnsHeaders;
+  let overlayInteractionElements = config.overlayInteractionElements;
+  let ssdbPortExposed = config.ssdbPortExposed;
+  return {tableSeriesColumnsHeaders, 
+    overlayInteractionElements,
+    ssdbPortExposed};
+  }
+
+async function onLoadFunction() {
+  let config = await configuration();
   // document.location, since ajax request is done in browser and should use host resolutions
+  let url = `${document.location.protocol}//${document.location.hostname}:${config.ssdbPortExposed}`
   let urlGetProjects = `${url}/get_projects`
   
   $.ajax({
@@ -150,7 +128,7 @@ function onLoadFunction() {
           // Create table for ligands in series
           let tableSeries = $('<table class="StructuresInSeriesTable"></table>');
           let thead = $('<thead>').append('<tr>');
-          tableSeriesColumnsHeaders.forEach(col => {
+          config.tableSeriesColumnsHeaders.forEach(col => {
             let th = $('<th>').text(col.text);
             if (col.class) {
               th.addClass(col.class);
@@ -170,7 +148,7 @@ function onLoadFunction() {
               ligands.forEach((ligand) => {
                 pdbFiles.push(ligand.PathToStructure)
                 let ligandRow = $('<tr></tr>');
-                overlayInteractionElements.forEach(interElement => {
+                config.overlayInteractionElements.forEach(interElement => {
                   let tableCell = $('<td>');
                   if (interElement.elementType === 'structureLabel') {
                     tableCell.text(ligand.Ligand);
@@ -210,16 +188,16 @@ function onLoadFunction() {
     // this timeout is ultrastupid, fix things later
     let timeStamp = new Date();
     let accessDate = $('<p>').text(`accessed on ${timeStamp.toLocaleDateString()}, ${timeStamp.toLocaleTimeString()}`)
+    $('#selectedInfo').append(accessDate);
+    let structureInput = $("<input>", {
+      type: "text",
+      id: "structureInput",
+      placeholder: "Structure ID1;StructureID2"
+    });
+    structureInput.on('keyup', searchForStructure);
+    $('#selectedInfo').append(structureInput);
     setTimeout(function () {
-      $('#selectedInfo').append(accessDate);
       // add search box for ligands
-      let structureInput = $("<input>", {
-        type: "text",
-        id: "structureInput",
-        placeholder: "Structure ID1;StructureID2"
-      });
-      structureInput.on('keyup', searchForStructure);
-      $('#selectedInfo').append(structureInput);
       // to ensure that event listeners in other .js scripts run only after the
       // content is completely generated by jQuery.
       // Run related code within $(document).on('contentReady', function() {}
@@ -236,5 +214,8 @@ $(document).ready(function() {
     console.log('content is ready');
   });
 
+
+
+console.log(configuration());
   // Trigger the event after setting up the listener
 });

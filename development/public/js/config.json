@@ -1,0 +1,29 @@
+{
+  "tableSeriesColumnsHeaders": [
+    { "text": "Structure", "class": "", "colspan": "" },
+    { "text": "View", "class": "", "colspan": "" },
+    { "text": "R", "class": "", "colspan": "" },
+    { "text": "Prot L", "class": "colored", "colspan": "2" },
+    { "text": "Lig L", "class": "", "colspan": "2" },
+    { "text": "Prot S", "class": "colored", "colspan": "2" },
+    { "text": "Lig S", "class": "", "colspan": "2" },
+    { "text": "W", "class": "", "colspan": "" },
+    { "text": "HB", "class": "", "colspan": "" }
+  ],
+  "overlayInteractionElements": [
+    { "representation": "textboxLigandID", "elementType": "structureLabel", "class": "ligand-table row-header" },
+    { "representation": "Visible", "elementType": "checkbox", "class": "" },
+    { "representation": "Ribbon", "elementType": "checkbox", "class": "" },
+    { "representation": "Licorice", "elementType": "checkbox", "class": "colored" },
+    { "representation": "Licorice", "elementType": "colorpicker", "class": "colored" },
+    { "representation": "LigandLicorice", "elementType": "checkbox", "class": "" },
+    { "representation": "LigandLicorice", "elementType": "colorpicker", "class": "" },
+    { "representation": "Surface", "elementType": "checkbox", "class": "colored" },
+    { "representation": "Surface", "elementType": "colorpicker", "class": "colored" },
+    { "representation": "LigandSurface", "elementType": "checkbox", "class": "" },
+    { "representation": "LigandSurface", "elementType": "colorpicker", "class": "" },
+    { "representation": "Water", "elementType": "checkbox", "class": "" },
+    { "representation": "Interactions", "elementType": "checkbox", "class": "" }
+  ],
+  "ssdbPortExposed": 5000
+}
