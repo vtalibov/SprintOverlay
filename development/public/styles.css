@@ -29,7 +29,7 @@ body, html {
     flex-direction: column;
     background-color: #e0e0e0; /* Right column background color */
     box-sizing: border-box;
-    width: 350px; /* initial value; controlled dynamically by js/gui.js after the content is generated */
+    width: 350px; /* initial value; controlled dynamically  */
     align-items: center;
 }
 

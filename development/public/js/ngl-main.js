@@ -18,8 +18,6 @@ $(document).ready(function(){
   
   // create listeners only after jQuery is done generating right-hand panel 
   $(document).on('contentReady', function() {
-    // forEach method always expects function as an argument; hence an anonymous
-    // function =>.
     pdbFiles.forEach((file, index) => {
     addRepresentationListeners(index);
     });
