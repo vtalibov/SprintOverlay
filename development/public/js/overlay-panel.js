@@ -82,108 +82,99 @@ async function onLoadFunction() {
   // document.location, since ajax request is done in browser and should use host resolutions
   let url = `${document.location.protocol}//${document.location.hostname}:${config.ssdbPortExposed}`
   let urlGetProjects = `${url}/get_projects`
+  let urlGetProjectSeries = `${url}/get_project_series`;
+  let urlGetStructuresInSeries = `${url}/get_project_structures_in_series`;
   
-  $.ajax({
-    url: urlGetProjects,
-    type: 'GET',
-    success: function(response) {
-      // Populate the select dropdown with projects
-      // dot notation is used
-      response.forEach(function(project) {
-        $('#projectSelect').append(`<option value="${project.Project}">${project.Project}</option>`);
-      });
-    },
-    error: function(xhr, status, error) {
-      $('#selectedInfo').text(`Error fetching data for the selected project: ${error}`);
-      $('#selectedInfo').show();
-    }
-  });
+  async function getProjects() {
+    let response = await fetch(urlGetProjects, {method: 'GET'});
+    let projects = await response.json()
+    return projects
+  }
 
-  $('#projectSelect').change(function() {
+  async function getProjectSeries(selectedProject) {
+    let response = await fetch(
+      urlGetProjectSeries, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ Project: selectedProject })
+    });
+    let seriesInProject = await response.json();
+    return seriesInProject;
+  }
+
+  let projects = await getProjects();
+  projects.forEach(project => {
+    $('#projectSelect').append(`<option value="${project.Project}">${project.Project}</option>`);
+  })
+
+  $('#projectSelect').change(async function() {
     let selectedProject = $(this).val();
     // To make the selector disappear and instead show header with a project name
     $(this).hide();
     let overlayHeader = $('<h2>').text(selectedProject)
     $('#selectedInfo').append(overlayHeader);
     $('#selectedInfo').show();
-
-    let urlGetProjectSeries = `${url}/get_project_series`;
-    let urlGetStructuresInSeries = `${url}/get_project_structures_in_series`;
-
-    $.ajax({
-      url: urlGetProjectSeries,
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({ Project: selectedProject }), // Pass selected project as JSON data
-      success: function(seriesInProject) {
-        let globalIndex = 0;
-        seriesInProject.forEach((series) => {
-          let seriesTableHeader = $('<span class="series expanded"></span>');
-          seriesTableHeader.click(function() {
-            $(this).toggleClass('expanded');
-            tableSeries.toggle();
+    let globalIndex = 0;
+    let seriesInProject = await getProjectSeries(selectedProject);
+    seriesInProject.forEach((series) => {
+      let seriesTableHeader = $('<span class="series expanded"></span>');
+      seriesTableHeader.click(function() {
+        $(this).toggleClass('expanded');
+        tableSeries.toggle();
+      });
+      seriesTableHeader.append(`<strong>${series.Series}</strong>`);
+      // Create table for ligands in series
+      let tableSeries = $('<table class="StructuresInSeriesTable"></table>');
+      let thead = $('<thead>').append('<tr>');
+      config.tableSeriesColumnsHeaders.forEach(col => {
+        let th = $('<th>').text(col.text);
+        if (col.class) {
+          th.addClass(col.class);
+        }
+        if (col.colspan) {
+          th.attr('colspan', col.colspan);
+        }
+        thead.find('tr').append(th);
+      });
+      let tbody = $('<tbody></tbody>');
+      $.ajax({
+        url: urlGetStructuresInSeries,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(series), // Pass series as JSON data
+        success: function(ligands) {
+          ligands.forEach((ligand) => {
+            pdbFiles.push(ligand.PathToStructure)
+            let ligandRow = $('<tr></tr>');
+            config.overlayInteractionElements.forEach(interElement => {
+              let tableCell = $('<td>');
+              if (interElement.elementType === 'structureLabel') {
+                tableCell.text(ligand.Ligand);
+                tableCell.attr('id', interElement.representation + globalIndex)
+              } else if (interElement.elementType === 'checkbox') {
+                tableCell.append(createCheckbox(interElement.representation, globalIndex));
+              } else if (interElement.elementType === 'colorpicker') {
+                tableCell.append(createColorPicker(interElement.representation,
+                  randomHexColorString, globalIndex));
+              }
+              tableCell.addClass(interElement.class);
+              ligandRow.append(tableCell);
+            });
+            tbody.append(ligandRow);
+            globalIndex++;
+            tableSeries.append(thead, tbody);
           });
-          seriesTableHeader.append('<strong>' + series.Series + '</strong>');
-          // Create table for ligands in series
-          let tableSeries = $('<table class="StructuresInSeriesTable"></table>');
-          let thead = $('<thead>').append('<tr>');
-          config.tableSeriesColumnsHeaders.forEach(col => {
-            let th = $('<th>').text(col.text);
-            if (col.class) {
-              th.addClass(col.class);
-            }
-            if (col.colspan) {
-              th.attr('colspan', col.colspan);
-            }
-            thead.find('tr').append(th);
-          });
-          let tbody = $('<tbody></tbody>');
-          $.ajax({
-            url: urlGetStructuresInSeries,
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(series), // Pass series as JSON data
-            success: function(ligands) {
-              ligands.forEach((ligand) => {
-                pdbFiles.push(ligand.PathToStructure)
-                let ligandRow = $('<tr></tr>');
-                config.overlayInteractionElements.forEach(interElement => {
-                  let tableCell = $('<td>');
-                  if (interElement.elementType === 'structureLabel') {
-                    tableCell.text(ligand.Ligand);
-                    tableCell.attr('id', interElement.representation + globalIndex)
-                  } else if (interElement.elementType === 'checkbox') {
-                    tableCell.append(createCheckbox(interElement.representation, globalIndex));
-                  } else if (interElement.elementType === 'colorpicker') {
-                    tableCell.append(createColorPicker(interElement.representation,
-                      randomHexColorString, globalIndex));
-                  }
-                  tableCell.addClass(interElement.class);
-                  ligandRow.append(tableCell);
-                });
-                tbody.append(ligandRow);
-                globalIndex++;
-                tableSeries.append(thead, tbody);
-              });
-              $('#checkboxContainer').append(seriesTableHeader);
-              $('#checkboxContainer').append(tableSeries);
-              $('#checkboxContainer').append('<br>');
-              // TODO right now, executed multiple times
-              adjustColumnsWidth();
-            },
-            error: function(xhr, status, error) {
-              $('#selectedInfo').text('Error fetching data for the selected project: ' + error);
-              $('#selectedInfo').show();
-              console.error('Error fetching series in project:', error);
-            }
-          });
+          $('#checkboxContainer').append(seriesTableHeader);
+          $('#checkboxContainer').append(tableSeries);
+          $('#checkboxContainer').append('<br>');
+          // TODO right now, executed multiple times
+        },
+        error: function(xhr, status, error) {
+          $('#selectedInfo').text('Error fetching data for the selected project: ' + error);
+          $('#selectedInfo').show();
+          console.error('Error fetching series in project:', error);
+        }
         });
-      },
-      error: function(xhr, status, error) {
-        $('#selectedInfo').text('Error fetching data for the selected project:' + error);
-        $('#selectedInfo').show();
-        console.error('Error fetching series in project:', error);
-      }
     });
     // stamp for the db access; right now does not corresponded to the last
     // interacrtion with db
@@ -209,7 +200,6 @@ async function onLoadFunction() {
 // scaling-related functions
 function adjustColumnsWidth() {
   let table = $('table.StructuresInSeriesTable');
-  console.log(table);
   let leftColumn = $('.left');
   let rightColumn = $('.right');
   if (table.length && rightColumn.length) {
