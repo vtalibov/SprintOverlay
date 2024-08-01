@@ -80,10 +80,10 @@ async function configuration() {
 async function onLoadFunction() {
   let config = await configuration();
   // document.location, since ajax request is done in browser and should use host resolutions
-  let url = `${document.location.protocol}//${document.location.hostname}:${config.ssdbPortExposed}`
-  let urlGetProjects = `${url}/get_projects`
-  let urlGetProjectSeries = `${url}/get_project_series`;
-  let urlGetStructuresInSeries = `${url}/get_project_structures_in_series`;
+  const url = `${document.location.protocol}//${document.location.hostname}:${config.ssdbPortExposed}`
+  const urlGetProjects = `${url}/get_projects`
+  const urlGetProjectSeries = `${url}/get_project_series`;
+  const urlGetStructuresInSeries = `${url}/get_project_structures_in_series`;
   
   async function getProjects() {
     let response = await fetch(urlGetProjects, {method: 'GET'});
@@ -113,7 +113,7 @@ async function onLoadFunction() {
     return structuresInSeries;
   }
 
-  let MakeTable = {
+  const MakeTable = {
     genColumnHeaders: function() {
       let thead = $('<thead>').append('<tr></tr>');
       config.tableSeriesColumnsHeaders.forEach(col => {
@@ -155,22 +155,11 @@ async function onLoadFunction() {
 
   $('#projectSelect').change(async function() {
     let selectedProject = $(this).val();
-    // To make the selector disappear and instead show header with a project name
     $(this).hide();
-    let overlayHeader = $('<h2>').text(selectedProject)
-    $('#selectedInfo').append(overlayHeader);
-    $('#selectedInfo').show();
     let globalIndex = 0;
     let seriesInProject = await getProjectSeries(selectedProject);
-    
-    // use for loop here to use await.
+    // for...in loop here to use await.
     for (const series of seriesInProject) {
-      let seriesTableHeader = $('<span class="series expanded"></span>');
-      seriesTableHeader.click(function() {
-        $(this).toggleClass('expanded');
-        tableSeries.toggle();
-      });
-      seriesTableHeader.append(`<strong>${series.Series}</strong>`);
       // Create table for ligands in series
       let tableSeries = $('<table class="StructuresInSeriesTable"></table>');
       let tbody = $('<tbody></tbody>');
@@ -181,39 +170,41 @@ async function onLoadFunction() {
         globalIndex++;
       });
       tableSeries.append(MakeTable.genColumnHeaders(), tbody);
+      let seriesTableHeader = $('<span class="series expanded"></span>');
+      seriesTableHeader.click(function() {
+        $(this).toggleClass('expanded');
+        tableSeries.toggle();
+      });
+      seriesTableHeader.append(`<strong>${series.Series}</strong>`);
+      $('#checkboxContainer').append(seriesTableHeader, tableSeries, '<br>');
       adjustColumnsWidth();
-      $('#checkboxContainer').append(seriesTableHeader);
-      $('#checkboxContainer').append(tableSeries);
-      $('#checkboxContainer').append('<br>');
     };
-
+    // timestamp
     let timeStamp = new Date();
     let accessDate = $('<p>').text(`accessed on ${timeStamp.toLocaleDateString()}, ${timeStamp.toLocaleTimeString()}`)
-    $('#selectedInfo').append(accessDate);
     // search textbox
-    let structureInput = $("<input>", {
+    let searchInput = $("<input>", {
       type: "text",
-      id: "structureInput",
+      id: "searchInput",
       placeholder: "Structure ID1;StructureID2"
     });
-    structureInput.on('keyup', searchForStructure);
-    $('#selectedInfo').append(structureInput);
-    // TODO
-    // this timeout is ultrastupid, fix things later
-    setTimeout(function () {
-      $(document).trigger('contentReady');
-    }, 2000);
+    searchInput.on('keyup', searchForStructure);
+    // overlay panel 
+    header
+    $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput);
+    $('#selectedInfo').show();
+    // trigger
+    $(document).trigger('contentReady');
   });
 }
 
-// scaling-related functions
 function adjustColumnsWidth() {
   let table = $('table.StructuresInSeriesTable');
   let leftColumn = $('.left');
   let rightColumn = $('.right');
   if (table.length && rightColumn.length) {
-      let rightColumnWidth = table.outerWidth() + 40;
-      let leftColumnWidth = $('.container').width() - rightColumnWidth;
+    let rightColumnWidth = table.outerWidth() + 40;
+    let leftColumnWidth = $('.container').width() - rightColumnWidth;
       rightColumn.width(rightColumnWidth);
       leftColumn.width(leftColumnWidth);
   }
@@ -221,12 +212,8 @@ function adjustColumnsWidth() {
 
 $(document).ready(function() {
   onLoadFunction();
-  // Set up the listener before triggering the event
-  $(document).on('contentReady', function() {
-    console.log('content is ready');
-  });
-  // Trigger the event after setting up the listener
 });
+
 $(window).on('resize', function() {
   adjustColumnsWidth();
 });
