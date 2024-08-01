@@ -190,7 +190,6 @@ async function onLoadFunction() {
     });
     searchInput.on('keyup', searchForStructure);
     // overlay panel 
-    header
     $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput);
     $('#selectedInfo').show();
     // trigger
