@@ -19,12 +19,12 @@ function searchForStructure() {
         if (filterSet.some(searchFor => structureLabel.indexOf(searchFor) > -1) 
         || filter == "") {
       tr[i].style.display = "";
-    } else {
-      tr[i].style.display = "none";
+      } else {
+        tr[i].style.display = "none";
+      }
+      }
     }
-  }
-}
-});
+  });
 }
 
 // TODO
@@ -102,6 +102,52 @@ async function onLoadFunction() {
     return seriesInProject;
   }
 
+  async function getStructuresInSeries(series) {
+    let response = await fetch(
+      urlGetStructuresInSeries, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(series)
+    });
+    let structuresInSeries = await response.json();
+    return structuresInSeries;
+  }
+
+  let MakeTable = {
+    genColumnHeaders: function() {
+      let thead = $('<thead>').append('<tr></tr>');
+      config.tableSeriesColumnsHeaders.forEach(col => {
+          let th = $('<th></th>').text(col.text);
+          if (col.class) {
+              th.addClass(col.class);
+          }
+          if (col.colspan) {
+              th.attr('colspan', col.colspan);
+          }
+          thead.find('tr').append(th);
+      });
+      return thead;
+    },
+    genRow: function(ligand, index) {
+      let structureRow = $('<tr></tr>');
+      config.overlayInteractionElements.forEach(interElement => {
+        let tableCell = $('<td>');
+        if (interElement.elementType === 'structureLabel') {
+          tableCell.text(ligand.Ligand);
+          tableCell.attr('id', `${interElement.representation}${index}`)
+        } else if (interElement.elementType === 'checkbox') {
+          tableCell.append(createCheckbox(interElement.representation, index));
+        } else if (interElement.elementType === 'colorpicker') {
+          tableCell.append(createColorPicker(interElement.representation,
+            randomHexColorString, index));
+        }
+        tableCell.addClass(interElement.class);
+        structureRow.append(tableCell);
+      });
+      return structureRow;
+    }
+  };
+
   let projects = await getProjects();
   projects.forEach(project => {
     $('#projectSelect').append(`<option value="${project.Project}">${project.Project}</option>`);
@@ -116,7 +162,9 @@ async function onLoadFunction() {
     $('#selectedInfo').show();
     let globalIndex = 0;
     let seriesInProject = await getProjectSeries(selectedProject);
-    seriesInProject.forEach((series) => {
+    
+    // use for loop here to use await.
+    for (const series of seriesInProject) {
       let seriesTableHeader = $('<span class="series expanded"></span>');
       seriesTableHeader.click(function() {
         $(this).toggleClass('expanded');
@@ -125,59 +173,20 @@ async function onLoadFunction() {
       seriesTableHeader.append(`<strong>${series.Series}</strong>`);
       // Create table for ligands in series
       let tableSeries = $('<table class="StructuresInSeriesTable"></table>');
-      let thead = $('<thead>').append('<tr>');
-      config.tableSeriesColumnsHeaders.forEach(col => {
-        let th = $('<th>').text(col.text);
-        if (col.class) {
-          th.addClass(col.class);
-        }
-        if (col.colspan) {
-          th.attr('colspan', col.colspan);
-        }
-        thead.find('tr').append(th);
-      });
       let tbody = $('<tbody></tbody>');
-      $.ajax({
-        url: urlGetStructuresInSeries,
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(series), // Pass series as JSON data
-        success: function(ligands) {
-          ligands.forEach((ligand) => {
-            pdbFiles.push(ligand.PathToStructure)
-            let ligandRow = $('<tr></tr>');
-            config.overlayInteractionElements.forEach(interElement => {
-              let tableCell = $('<td>');
-              if (interElement.elementType === 'structureLabel') {
-                tableCell.text(ligand.Ligand);
-                tableCell.attr('id', interElement.representation + globalIndex)
-              } else if (interElement.elementType === 'checkbox') {
-                tableCell.append(createCheckbox(interElement.representation, globalIndex));
-              } else if (interElement.elementType === 'colorpicker') {
-                tableCell.append(createColorPicker(interElement.representation,
-                  randomHexColorString, globalIndex));
-              }
-              tableCell.addClass(interElement.class);
-              ligandRow.append(tableCell);
-            });
-            tbody.append(ligandRow);
-            globalIndex++;
-            tableSeries.append(thead, tbody);
-          });
-          $('#checkboxContainer').append(seriesTableHeader);
-          $('#checkboxContainer').append(tableSeries);
-          $('#checkboxContainer').append('<br>');
-          // TODO right now, executed multiple times
-        },
-        error: function(xhr, status, error) {
-          $('#selectedInfo').text('Error fetching data for the selected project: ' + error);
-          $('#selectedInfo').show();
-          console.error('Error fetching series in project:', error);
-        }
-        });
-    });
-    // stamp for the db access; right now does not corresponded to the last
-    // interacrtion with db
+      let structuresInSeries = await getStructuresInSeries(series);
+      structuresInSeries.forEach((structure) => {
+        pdbFiles.push(structure.PathToStructure)
+        tbody.append(MakeTable.genRow(structure, globalIndex));
+        globalIndex++;
+      });
+      tableSeries.append(MakeTable.genColumnHeaders(), tbody);
+      adjustColumnsWidth();
+      $('#checkboxContainer').append(seriesTableHeader);
+      $('#checkboxContainer').append(tableSeries);
+      $('#checkboxContainer').append('<br>');
+    };
+
     let timeStamp = new Date();
     let accessDate = $('<p>').text(`accessed on ${timeStamp.toLocaleDateString()}, ${timeStamp.toLocaleTimeString()}`)
     $('#selectedInfo').append(accessDate);
