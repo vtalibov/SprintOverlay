@@ -1,5 +1,6 @@
 "use strict";
 const pdbFiles = [];
+const ligandFiles = [];
 
 function searchForStructure() {
   let structureInput = document.getElementById("structureInput");
@@ -166,6 +167,7 @@ async function onLoadFunction() {
       let structuresInSeries = await getStructuresInSeries(series);
       structuresInSeries.forEach((structure) => {
         pdbFiles.push(structure.PathToStructure)
+        ligandFiles.push(structure.PathToLigand)
         tbody.append(MakeTable.genRow(structure, globalIndex));
         globalIndex++;
       });
@@ -194,6 +196,7 @@ async function onLoadFunction() {
     $('#selectedInfo').show();
     // trigger
     $(document).trigger('contentReady');
+    console.log(ligandFiles)
   });
 }
 
