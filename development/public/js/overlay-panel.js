@@ -3,8 +3,8 @@ const pdbFiles = [];
 const ligandFiles = [];
 
 function searchForStructure() {
-  let structureInput = document.getElementById("structureInput");
-  let filter = structureInput.value.toUpperCase(); // case-agnostic search
+  let searchInput = document.getElementById("searchInput");
+  let filter = searchInput.value.toUpperCase(); // case-agnostic search
   // if several labels are submitted, separated by semicolon.
   let filterSet = filter.split(';');
   let tablesStructuresInSeries = document.querySelectorAll('.StructuresInSeriesTable');
@@ -207,8 +207,8 @@ function adjustColumnsWidth() {
   if (table.length && rightColumn.length) {
     let rightColumnWidth = table.outerWidth() + 40;
     let leftColumnWidth = $('.container').width() - rightColumnWidth;
-      rightColumn.width(rightColumnWidth);
-      leftColumn.width(leftColumnWidth);
+    rightColumn.width(rightColumnWidth);
+    leftColumn.width(leftColumnWidth);
   }
 }
 
