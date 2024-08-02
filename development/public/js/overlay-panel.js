@@ -1,6 +1,7 @@
 "use strict";
 // map object to store data
 const pathsToFiles = new Map();
+let config;
 
 function searchForStructure() {
   let searchInput = document.getElementById("searchInput");
@@ -26,13 +27,6 @@ function searchForStructure() {
       }
     }
   });
-}
-
-// TODO
-// define a dictionary with default colors and use them instead
-function randomHexColorString() {
-  let randomHex = Math.floor(Math.random() * 0xFFFFFF).toString(16);
-  return `#${randomHex.padStart(6, '0')}`;
 }
 
 function createCheckbox(forRepresentation, index) {
@@ -79,7 +73,7 @@ async function configuration() {
   }
 
 async function onLoadFunction() {
-  let config = await configuration();
+  config = await configuration();
   // document.location, since ajax request is done in browser and should use host resolutions
   const url = `${document.location.protocol}//${document.location.hostname}:${config.ssdbPortExposed}`
   const urlGetProjects = `${url}/get_projects`
@@ -130,6 +124,7 @@ async function onLoadFunction() {
       return thead;
     },
     genRow: function(ligand, index) {
+      let colorPickerColor = '#C0C0C0';
       let structureRow = $('<tr></tr>');
       config.overlayInteractionElements.forEach(interElement => {
         let tableCell = $('<td>');
@@ -140,7 +135,7 @@ async function onLoadFunction() {
           tableCell.append(createCheckbox(interElement.representation, index));
         } else if (interElement.elementType === 'colorpicker') {
           tableCell.append(createColorPicker(interElement.representation,
-            randomHexColorString, index));
+            colorPickerColor, index));
         }
         tableCell.addClass(interElement.class);
         structureRow.append(tableCell);

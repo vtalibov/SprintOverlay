@@ -1,9 +1,43 @@
 import {components} from './ngl-main.js';
 
+const colorpickersColors = [
+  '#00FF00', // green
+  '#FFFF00', // yellow
+  '#FFFFFF', // white
+  '#FA8072', // salmon
+  '#00FFFF', // cyan
+  '#FF00FF', // purple
+  '#FFBF00', // orange
+  '#9FE2BF', // olive
+  '#C0C0C0', // silver
+  '#CCCCFF'  // light purple
+];
+
+function randomHexColorString() {
+  let randomHex = Math.floor(Math.random() * 0xFFFFFE).toString(16);
+  return `#${randomHex.padStart(5, '0')}`;
+}
+
+function assignColorpickersColor(index) {
+  let colorpickerColor;
+  if (components.length < colorpickersColors.length) {
+    colorpickerColor = colorpickersColors[components.length];
+  } else {
+    colorpickerColor = randomHexColorString();
+  }
+  let colorPickers = config.overlayInteractionElements.filter(
+  element => element.elementType === "colorpicker");
+  colorPickers.forEach(element => {
+    $(`#colorpicker${element.representation}${index}`).spectrum("set", colorpickerColor);
+  });
+}
+
 export async function loadStructure(index) {
   try {
     // check if the structure is already loaded
     if (!components[index]) {
+      assignColorpickersColor(index);
+      console.log(document.getElementById("colorpickerLicorice0").value)
       // two structures are concatenated, cf
       // https://github.com/nglviewer/ngl/blob/master/examples/scripts/test/concat.js and
       // https://nglviewer.org/ngl/?script=test/concat
@@ -215,8 +249,9 @@ export function toggleInteractions(index) {
       components[index].interactionsRepresentation = null;
     } else {
       components[index].interactionsRepresentation = components[index].addRepresentation( "contact",
-      { diffuse: "#49ff00", // to change color of contacts; can't do it any other way
-        ionicInteraction: false, // NGL does not recognize charged moieties that well. E.g. cyclic amides are considered to be amines
+      { diffuse: "#FFFFFF", // adjust to change color of contacts; can't do it via standart API; very dimm
+        radiusSize: 0.08,
+        ionicInteraction: false, // NGL does not recognize charged moieties that well. E.g. amides are considered to be amines
         refineSaltBridges: false, // this and above - to render salt bridges as normal h-bonds.
         // talk to Katarina/Adrian regarding constrains below. Consult with documentation.
         maxHbondDist: 3.25,
