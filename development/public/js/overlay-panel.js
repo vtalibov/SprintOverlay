@@ -1,9 +1,10 @@
 "use strict";
-const pdbFiles = [];
+// map object to store data
+const pathsToFiles = new Map();
 
 function searchForStructure() {
-  let structureInput = document.getElementById("structureInput");
-  let filter = structureInput.value.toUpperCase(); // case-agnostic search
+  let searchInput = document.getElementById("searchInput");
+  let filter = searchInput.value.toUpperCase(); // case-agnostic search
   // if several labels are submitted, separated by semicolon.
   let filterSet = filter.split(';');
   let tablesStructuresInSeries = document.querySelectorAll('.StructuresInSeriesTable');
@@ -165,7 +166,7 @@ async function onLoadFunction() {
       let tbody = $('<tbody></tbody>');
       let structuresInSeries = await getStructuresInSeries(series);
       structuresInSeries.forEach((structure) => {
-        pdbFiles.push(structure.PathToStructure)
+        pathsToFiles.set(globalIndex, { protein: structure.PathToStructure, ligand: structure.PathToLigand });
         tbody.append(MakeTable.genRow(structure, globalIndex));
         globalIndex++;
       });
@@ -204,8 +205,8 @@ function adjustColumnsWidth() {
   if (table.length && rightColumn.length) {
     let rightColumnWidth = table.outerWidth() + 40;
     let leftColumnWidth = $('.container').width() - rightColumnWidth;
-      rightColumn.width(rightColumnWidth);
-      leftColumn.width(leftColumnWidth);
+    rightColumn.width(rightColumnWidth);
+    leftColumn.width(leftColumnWidth);
   }
 }
 

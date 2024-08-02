@@ -4,11 +4,33 @@ export async function loadStructure(index) {
   try {
     // check if the structure is already loaded
     if (!components[index]) {
-      let loadedComponent = await stage.loadFile(pdbFiles[index], { defaultRepresentation: false });
-      components[index] = loadedComponent;
+      // two structures are concatenated, cf
+      // https://github.com/nglviewer/ngl/blob/master/examples/scripts/test/concat.js and
+      // https://nglviewer.org/ngl/?script=test/concat
+      // to address protein or ligand structures for in selection algebra, use mode expressions:
+      // /0 - protein, /1 - ligand
+      let ligandStructure;
+      let proteinStructure;
+      // conditional below to handle non-split cases
+      if (!pathsToFiles.get(index).ligand) {
+        ligandStructure = await stage.loadFile('decoy.pdb', { defaultRepresentation: false });
+      } else {
+        ligandStructure = await stage.loadFile(pathsToFiles.get(index).ligand, { defaultRepresentation: false });
+      };
+      if (!pathsToFiles.get(index).protein) {
+        proteinStructure = await stage.loadFile('decoy.pdb', { defaultRepresentation: false });
+      } else {
+        proteinStructure = await stage.loadFile(pathsToFiles.get(index).protein, { defaultRepresentation: false });
+      };
+      let concatStructure = NGL.concatStructures(
+        'concat',
+        proteinStructure.structure.getView(new NGL.Selection('')),
+        ligandStructure.structure.getView(new NGL.Selection(''))
+      );
+      components[index] = stage.addComponentFromObject(concatStructure);
     }
   } catch (error) {
-    console.error("Error loading PDB file:", pdbFiles[index], error);
+    console.error("Error loading files:", error);
   }
 }
 
@@ -76,7 +98,7 @@ export function toggleLicorice(index) {
           components[index].licoriceRepresentation = null;
       } else {
           components[index].licoriceRepresentation = components[index].addRepresentation("line",
-          {sele: "not hetero and not apolarh", linewidth: 3, colorValue: colorpickerValue('Licorice', index) });
+          {sele: "not hetero and not apolarh and /0", linewidth: 3, colorValue: colorpickerValue('Licorice', index) });
       }
     }
 }
@@ -90,7 +112,7 @@ export function toggleLigandLicorice(index) {
       } else {
           components[index].ligandLicoriceRepresentation = components[index].addRepresentation("licorice",
           {
-            sele: "(INH and not apolarh) or (hetero and not apolarh) and (not water or ion)",
+            sele: "(/1 and not apolarh) or (INH and not apolarh) or (hetero and not apolarh) and (not water or ion)",
             multipleBond: "offset",
             colorValue: colorpickerValue('LigandLicorice', index)
           });
@@ -150,7 +172,7 @@ export function toggleLigandSurface(index) {
       components[index].ligandSurfaceRepresentation = null;
     } else {
       components[index].ligandSurfaceRepresentation = components[index].addRepresentation("surface",
-      { sele: "INH or hetero and (not water)", surfaceType: "av", contour: true,
+      { sele: "(/1 or INH) and not ion", surfaceType: "av", contour: true,
       color: colorpickerValue("LigandSurface", index) });
     }
   }
@@ -167,7 +189,7 @@ export function toggleSurface(index) {
     } else {
       let pocketRadius = parseInt(pocketRadiusSlider.value, 10);
       components[index].surfaceRepresentation = components[index].addRepresentation("surface", {
-        sele: "not hetero", filterSele: expandedSelectionLigand(index, "INH", pocketRadius, true),
+        sele: "not hetero", filterSele: expandedSelectionLigand(index, "/1 or INH", pocketRadius, true),
         contour: true, surfaceType: "av", lazy: true, probeRadius: 1.4, scaleFactor: 1.6,
         color: colorpickerValue("Surface", index) });
       }
@@ -200,8 +222,9 @@ export function toggleInteractions(index) {
         maxHbondDist: 3.25,
         maxHbondDonPlaneAngle: 40,
         maxHalogenBondDist: 4,
-        sele: expandedSelectionLigand(index, "INH", 4, false),
-        filterSele: "INH"
+        masterModelIndex: 0,
+        sele: expandedSelectionLigand(index, "/1 or INH", 4, false),
+        filterSele: "/1 or INH"
       });
     }
   }

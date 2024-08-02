@@ -18,16 +18,16 @@ $(document).ready(function(){
   
   // create listeners only after jQuery is done generating right-hand panel 
   $(document).on('contentReady', function() {
-    pdbFiles.forEach((file, index) => {
+    for (let index of pathsToFiles.keys()) {
     addRepresentationListeners(index);
-    });
+    };
     // to make pocket radius slider on viewport work for existed representations    
     pocketRadiusSlider.oninput = function (e) {
       components.forEach((component, index) => {
       if (component.surfaceRepresentation) {
         // parse as integer, otherwise string
         var pocketRadius = parseInt(e.target.value, 10);
-        component.surfaceRepresentation.setParameters({filterSele: expandedSelectionLigand(index, "INH", pocketRadius, true)}); 
+        component.surfaceRepresentation.setParameters({filterSele: expandedSelectionLigand(index, "/1 or INH", pocketRadius, true)}); 
       }
       });
     };
