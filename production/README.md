@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS my_table (
     Ligand TEXT,
     Comment TEXT,
     PathToStructure TEXT
+    PathToLigand TEXT
 );
 ```
 

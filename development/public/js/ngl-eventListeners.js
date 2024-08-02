@@ -32,7 +32,7 @@ export function addRepresentationListeners(index) {
   let rowHeaderLigand = document.getElementById(rowHeaderLigandID);
   rowHeaderLigand.addEventListener("click", function () {
     if (components[index]) {
-    components[index].autoView("/1", 1000);
+    components[index].autoView("/1 or INH", 1000);
     };
   })
   // checkboxes

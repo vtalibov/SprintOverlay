@@ -9,8 +9,19 @@ export async function loadStructure(index) {
       // https://nglviewer.org/ngl/?script=test/concat
       // to address protein or ligand structures for in selection algebra, use mode expressions:
       // /0 - protein, /1 - ligand
-      let proteinStructure = await stage.loadFile(pathsToFiles.get(index).protein, { defaultRepresentation: false });
-      let ligandStructure = await stage.loadFile(pathsToFiles.get(index).ligand, { defaultRepresentation: false });
+      let ligandStructure;
+      let proteinStructure;
+      // conditional below to handle non-split cases
+      if (!pathsToFiles.get(index).ligand) {
+        ligandStructure = await stage.loadFile('decoy.pdb', { defaultRepresentation: false });
+      } else {
+        ligandStructure = await stage.loadFile(pathsToFiles.get(index).ligand, { defaultRepresentation: false });
+      };
+      if (!pathsToFiles.get(index).protein) {
+        proteinStructure = await stage.loadFile('decoy.pdb', { defaultRepresentation: false });
+      } else {
+        proteinStructure = await stage.loadFile(pathsToFiles.get(index).protein, { defaultRepresentation: false });
+      };
       let concatStructure = NGL.concatStructures(
         'concat',
         proteinStructure.structure.getView(new NGL.Selection('')),
@@ -101,7 +112,7 @@ export function toggleLigandLicorice(index) {
       } else {
           components[index].ligandLicoriceRepresentation = components[index].addRepresentation("licorice",
           {
-            sele: "(/1 and not apolarh) or (hetero and not apolarh) and (not water or ion)",
+            sele: "(/1 and not apolarh) or (INH and not apolarh) or (hetero and not apolarh) and (not water or ion)",
             multipleBond: "offset",
             colorValue: colorpickerValue('LigandLicorice', index)
           });
@@ -161,7 +172,7 @@ export function toggleLigandSurface(index) {
       components[index].ligandSurfaceRepresentation = null;
     } else {
       components[index].ligandSurfaceRepresentation = components[index].addRepresentation("surface",
-      { sele: "/1 and not ion", surfaceType: "av", contour: true,
+      { sele: "(/1 or INH) and not ion", surfaceType: "av", contour: true,
       color: colorpickerValue("LigandSurface", index) });
     }
   }
@@ -178,7 +189,7 @@ export function toggleSurface(index) {
     } else {
       let pocketRadius = parseInt(pocketRadiusSlider.value, 10);
       components[index].surfaceRepresentation = components[index].addRepresentation("surface", {
-        sele: "not hetero", filterSele: expandedSelectionLigand(index, "/1", pocketRadius, true),
+        sele: "not hetero", filterSele: expandedSelectionLigand(index, "/1 or INH", pocketRadius, true),
         contour: true, surfaceType: "av", lazy: true, probeRadius: 1.4, scaleFactor: 1.6,
         color: colorpickerValue("Surface", index) });
       }
@@ -212,8 +223,8 @@ export function toggleInteractions(index) {
         maxHbondDonPlaneAngle: 40,
         maxHalogenBondDist: 4,
         masterModelIndex: 0,
-        sele: expandedSelectionLigand(index, "/1", 4, false),
-        filterSele: "/1"
+        sele: expandedSelectionLigand(index, "/1 or INH", 4, false),
+        filterSele: "/1 or INH"
       });
     }
   }

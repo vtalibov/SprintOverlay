@@ -27,7 +27,7 @@ $(document).ready(function(){
       if (component.surfaceRepresentation) {
         // parse as integer, otherwise string
         var pocketRadius = parseInt(e.target.value, 10);
-        component.surfaceRepresentation.setParameters({filterSele: expandedSelectionLigand(index, "INH", pocketRadius, true)}); 
+        component.surfaceRepresentation.setParameters({filterSele: expandedSelectionLigand(index, "/1 or INH", pocketRadius, true)}); 
       }
       });
     };

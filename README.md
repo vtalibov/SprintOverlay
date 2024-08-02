@@ -9,15 +9,6 @@ alternatives are being sought.
 
 <img src="https://raw.githubusercontent.com/vtalibov/SprintOverlay/main/screenshot.png" width="600"/>
 
-## Demo
-
-A minimal instance is hosted [here](http://talibov.xyz:8080/), with SSDB under
-read-only access. References to the structures used are in `demo.bib`.
-
-For the correct representation of intermolecular contacts, the connectivity in
-structural files must be curated. This includes multiple `CONECT` records for
-double/triple bonds, links for covalent inhibitors, defined tautomers for
-certain aromatic cycles, *etc*. This was not done for the literature structures.
 
 ## Why?
 
@@ -41,8 +32,17 @@ Good papers are:
 ## How does it work
 
 Paths to structures and structure-related information (e.g., crystal system,
-series, target) are stored in an SQLite3 database. SSDB interacts
-with the database to handle requests from NGL Overlay.
+series, target) are stored in an SQLite3 database. The SSDB interacts with the
+database to handle requests from NGL Overlay.
+
+The viewer works with both combined and split structures. If the structure is
+combined, atoms of interest (e.g., ligands) should have the residue name `INH`.
+There may be issues with structures that have multiple models.
+
+To correctly represent intermolecular contacts, the connectivity in structural
+files must be curated. This includes multiple `CONECT` records for double/triple
+bonds, links for covalent inhibitors, defined tautomers for certain aromatic
+rings, etc.
 
 ## Development
 
