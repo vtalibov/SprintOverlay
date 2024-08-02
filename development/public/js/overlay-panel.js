@@ -1,6 +1,6 @@
 "use strict";
-const pdbFiles = [];
-const ligandFiles = [];
+// map object to store data
+const pathsToFiles = new Map();
 
 function searchForStructure() {
   let searchInput = document.getElementById("searchInput");
@@ -166,8 +166,7 @@ async function onLoadFunction() {
       let tbody = $('<tbody></tbody>');
       let structuresInSeries = await getStructuresInSeries(series);
       structuresInSeries.forEach((structure) => {
-        pdbFiles.push(structure.PathToStructure)
-        ligandFiles.push(structure.PathToLigand)
+        pathsToFiles.set(globalIndex, { protein: structure.PathToStructure, ligand: structure.PathToLigand });
         tbody.append(MakeTable.genRow(structure, globalIndex));
         globalIndex++;
       });
@@ -196,7 +195,6 @@ async function onLoadFunction() {
     $('#selectedInfo').show();
     // trigger
     $(document).trigger('contentReady');
-    console.log(ligandFiles)
   });
 }
 

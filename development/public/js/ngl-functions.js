@@ -9,8 +9,8 @@ export async function loadStructure(index) {
       // https://nglviewer.org/ngl/?script=test/concat
       // to address protein or ligand structures for in selection algebra, use mode expressions:
       // /0 - protein, /1 - ligand
-      let proteinStructure = await stage.loadFile(pdbFiles[index], { defaultRepresentation: false });
-      let ligandStructure = await stage.loadFile(ligandFiles[index], { defaultRepresentation: false });
+      let proteinStructure = await stage.loadFile(pathsToFiles.get(index).protein, { defaultRepresentation: false });
+      let ligandStructure = await stage.loadFile(pathsToFiles.get(index).ligand, { defaultRepresentation: false });
       let concatStructure = NGL.concatStructures(
         'concat',
         proteinStructure.structure.getView(new NGL.Selection('')),
