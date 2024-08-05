@@ -20,8 +20,10 @@ function randomHexColorString() {
 
 function assignColorpickersColor(index) {
   let colorpickerColor;
-  if (components.length < colorpickersColors.length) {
-    colorpickerColor = colorpickersColors[components.length];
+  // count only defined elemenets of sparse array
+  let numLoaded = components.filter(component => component !== undefined).length; 
+  if (numLoaded < colorpickersColors.length) {
+    colorpickerColor = colorpickersColors[numLoaded];
   } else {
     colorpickerColor = randomHexColorString();
   }
@@ -37,7 +39,6 @@ export async function loadStructure(index) {
     // check if the structure is already loaded
     if (!components[index]) {
       assignColorpickersColor(index);
-      console.log(document.getElementById("colorpickerLicorice0").value)
       // two structures are concatenated, cf
       // https://github.com/nglviewer/ngl/blob/master/examples/scripts/test/concat.js and
       // https://nglviewer.org/ngl/?script=test/concat
