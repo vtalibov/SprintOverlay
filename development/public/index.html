@@ -10,8 +10,9 @@
 </head>
 <body>
 <script src="js/jquery.min.js"></script>
-<script src="js/overlay-panel.js"></script>
 <script src="js/spectrum.min.js"></script>
+<script src="js/smiles-drawer.min.js"></script>
+<script src="js/overlay-panel.js"></script>
 <script src="js/ngl.js"></script>
 <script type="module" src="js/ngl-main.js"></script>
 
@@ -30,12 +31,13 @@
           <div id="selectedInfo" style="display: none;"></div>
           <div id="checkboxContainer">
           <!-- NGL Overlay interface elements are here -->
-          </div>
-        </div>
-        <div class="footer">
-            <p>2024, <a href="mailto:vladimir.o.talibov@gmail.com">Vladimir O. Talibov</a></p>
         </div>
     </div>
+    <div id="sformula"><p id='svgFormulaLabel'></p><svg id="svgFormula"></svg></div>
+    <div class="footer">
+        <p>2024, <a href="mailto:vladimir.o.talibov@gmail.com">Vladimir O. Talibov</a></p>
+    </div>
+</div>
 </div>
 
 </body>

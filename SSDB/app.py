@@ -82,7 +82,7 @@ def get_project_structures_in_series():
     data = request.json
     selected_project = data.get('Project')
     selected_series = data.get('Series')
-    data = query_db("SELECT ligand, PathToStructure, PathToLigand FROM my_table WHERE Project = ? AND Series = ?", (selected_project, selected_series,))
+    data = query_db("SELECT ligand, PathToStructure, PathToLigand, SMILES FROM my_table WHERE Project = ? AND Series = ?", (selected_project, selected_series,))
     # jsonification, tuples are into list of dictionaries
     result = to_json_output(data)
     return jsonify(result)

@@ -140,6 +140,16 @@ async function onLoadFunction() {
         tableCell.addClass(interElement.class);
         structureRow.append(tableCell);
       });
+      // structural formula of the ligand
+      if (pathsToFiles.get(index).smiles) {
+        structureRow.on('mouseenter', function(event) {
+          let moleculeOptions = {};
+          let reactionOptions = {};
+          let sd = new SmiDrawer(moleculeOptions, reactionOptions);
+          $('#sformula').find('p').text(ligand.Ligand);
+          sd.draw(pathsToFiles.get(index).smiles, '#svgFormula')
+        });
+      };
       return structureRow;
     }
   };
@@ -161,7 +171,7 @@ async function onLoadFunction() {
       let tbody = $('<tbody></tbody>');
       let structuresInSeries = await getStructuresInSeries(series);
       structuresInSeries.forEach((structure) => {
-        pathsToFiles.set(globalIndex, { protein: structure.PathToStructure, ligand: structure.PathToLigand });
+        pathsToFiles.set(globalIndex, { protein: structure.PathToStructure, ligand: structure.PathToLigand, smiles: structure.SMILES });
         tbody.append(MakeTable.genRow(structure, globalIndex));
         globalIndex++;
       });
