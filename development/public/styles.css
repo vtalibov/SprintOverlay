@@ -20,8 +20,31 @@ body, html {
     display: flex;
     flex-direction: column;
     flex: 1;
-    background-color: #f0f0f0; /* Left column background color */
-    /* You can add styles for the left column here */
+    position: relative;
+}
+
+#viewport {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+#sformula {
+    z-index: 10;
+    position: absolute;
+    text-align: center;
+    padding: 25px;
+    top: 0;
+    right: 0;
+}
+
+#sformula svg {
+    width: 250px;
+    height: 250px;
+}
+
+#sformula h2 {
+    color:#ccc;
 }
 
 .right {
@@ -32,6 +55,7 @@ body, html {
     width: 350px; /* initial value; controlled dynamically  */
     align-items: center;
 }
+
 
 .header {
     width: 100%;

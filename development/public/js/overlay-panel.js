@@ -143,11 +143,9 @@ async function onLoadFunction() {
       // structural formula of the ligand
       if (pathsToFiles.get(index).smiles) {
         structureRow.on('mouseenter', function(event) {
-          let moleculeOptions = {};
-          let reactionOptions = {};
-          let sd = new SmiDrawer(moleculeOptions, reactionOptions);
-          $('#sformula').find('p').text(ligand.Ligand);
-          sd.draw(pathsToFiles.get(index).smiles, '#svgFormula')
+          let sd = new SmiDrawer({bondThickness: 2, bondSpacing: 8});
+          $('#sformula').find('h2').text(ligand.Ligand);
+          sd.draw(pathsToFiles.get(index).smiles, '#svgFormula', 'gruvbox-dark')
         });
       };
       return structureRow;
