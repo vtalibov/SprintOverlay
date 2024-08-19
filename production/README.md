@@ -1,13 +1,5 @@
 # NGL Overlay
 
-NGL Overlay is an implementation of NGL, aiming to mimic the interface and
-functions of AstexViewer and AstexOverlay. NGL Overlay consists of two programs - 
-the NGL Overlay webapp, which provides viewer functionality and access to
-overlay page for the selected structures, and SSDB - the Simple Structure Database.
-SSDB does basic transactions with SQLite3 database file
-containing structure-related information. SSDB serves as a back-end for NGL
-Overlay interactions with this database.
-
 ## Deployment
 
 ### Shortcut
@@ -15,6 +7,9 @@ Overlay interactions with this database.
 `pipeline.sh` performs synchronization of the selected files between development
 and production versions, and builds Docker images. Image tag corresponds to the
 last commit tag for the corresponding program. 
+
+After synchronization, change the value of `ssdbAPI` in
+`SprintOverlay/public/js/config.json` from `":5000"` to `"/api"`.
 
 ### Preparations & initial database
 
@@ -26,7 +21,7 @@ In the applicable directory, create the database:
 sqlite3 my_database.db
 ```
 
-and populate a table in it:
+and populate a table (e.g., `my_table`) in it:
 
 ```sql
 CREATE TABLE IF NOT EXISTS my_table (
@@ -35,6 +30,7 @@ CREATE TABLE IF NOT EXISTS my_table (
     Protein TEXT,
     XtalSystem TEXT,
     Series TEXT,
+    SMILES TEXT,
     Ligand TEXT,
     Comment TEXT,
     PathToStructure TEXT
@@ -44,19 +40,13 @@ CREATE TABLE IF NOT EXISTS my_table (
 
 ### Docker images
 
-In `production` (root directory), modify `docker-compose.yml` accordingly:
+In `production` (root directory), modify `.env` accordingly:
 
-- Specify correct image names for the respective services (by default, reads from `.env` file, populated with `pipeline.sh`)
-- Specify correct mount points for `public/pdb` folder of NGLoverlay and `/database` folder of SSDB
+- Correct image tags for the respective services (by default, populated with `pipeline.sh`)
+- Specify correct mount points for `public/pdb` folder of NGLoverlay,
+  `/database` folder of SSDB and path to `nginx.conf`.
 
 Start with `docker-compose` or `docker compose`.
-
-To check if the applications are up and running:
-
-```bash
-curl localhost:80 # NGLoverlay
-curl localhost:5000 # SSDB
-```
 
 ### Usage
 
@@ -66,4 +56,5 @@ NGL Overlay is accessible in a local network via host IP:
 hostname -I
 ```
 
-Use port `:5000` to access SSDB interface. However, better to use a proper program to transact the database.
+You may bind port 80 of the `ssdb-prod` service to access rudiments of SSDB
+interface. However, to transact the database better to use a dedicated program.

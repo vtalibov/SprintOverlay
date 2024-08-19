@@ -1,9 +1,7 @@
-FROM nginx:alpine
-
-COPY ./nginx.conf /etc/nginx/nginx.conf
+FROM nginx
 
 COPY ./public /usr/share/nginx/html
 
+CMD ["nginx", "-g", "daemon off;"]
 EXPOSE 80
 # Start Nginx
-CMD ["nginx", "-g", "daemon off;"]

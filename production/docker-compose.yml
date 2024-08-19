@@ -1,28 +1,22 @@
-# docker-compose version
 version: '3'
-
-networks:
-  ngl-network:
-    driver: bridge 
-
 services:
   # NGLoverlay
   sprintoverlay-prod:
     image: sprintoverlay-prod:${NGLOVERLAY_TAG}
-    ports:
-      - "80:80"
-    networks:
-      - ngl-network
-    # mount host folder with structure as read-only
+    # mount host folder with files as read-only
     volumes:
       - ${FILE_DIR}:/usr/share/nginx/html/pdb:ro
   # SSDB
   ssdb-prod:
     image: ssdb-prod:${SSDB_TAG} 
-    ports:
-      - "5000:5000"
-    networks:
-      - ngl-network
     # mount host folder with the sqlite3 database, read-only
     volumes:
       - ${DB_DIR}:/app/database:ro
+  # reverse proxie
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_container
+    ports:
+      - 80:80
+    volumes:
+      - ${NGINX_CONF}:/etc/nginx/nginx.conf:ro
