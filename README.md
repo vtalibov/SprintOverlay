@@ -42,13 +42,14 @@ There may be issues with structures that have multiple models.
 To correctly represent intermolecular contacts, the connectivity in structural
 files must be curated. This includes multiple `CONECT` records for double/triple
 bonds, links for covalent inhibitors, defined tautomers for certain aromatic
-rings, etc.
+rings, etc. For split structures, for ligands it is recommended to use `sdf`
+files.
 
-## Development
+### Development
 
 See `development/` and `SSDB/`, either via development container or with a
 Python HTTP server (`httpserver-cors.py` in `development/public`).
 
-## Deployment
+### Deployment
 
 With a docker stack, see `production/`.
