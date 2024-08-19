@@ -108,6 +108,20 @@ async function onLoadFunction() {
     return structuresInSeries;
   }
 
+  function sFormulaPreview(index, ligand, pathsToFiles) {
+    return {
+      show: function(event) {
+        $('#sformula').find('h2').text(ligand.Ligand);
+        let sd = new SmiDrawer({ bondThickness: 2, bondSpacing: 8 });
+        sd.draw(pathsToFiles.get(index).smiles, '#svgFormula', 'gruvbox-dark')
+      }, 
+      clean: function(event) {
+        $('#sformula').find('h2').empty();
+        $('#svgFormula').empty()
+      }
+    };
+  }
+
   const MakeTable = {
     genColumnHeaders: function() {
       let thead = $('<thead>').append('<tr></tr>');
@@ -142,11 +156,9 @@ async function onLoadFunction() {
       });
       // structural formula of the ligand
       if (pathsToFiles.get(index).smiles) {
-        structureRow.on('mouseenter', function(event) {
-          let sd = new SmiDrawer({bondThickness: 2, bondSpacing: 8});
-          $('#sformula').find('h2').text(ligand.Ligand);
-          sd.draw(pathsToFiles.get(index).smiles, '#svgFormula', 'gruvbox-dark')
-        });
+        let sFormulaResponse = sFormulaPreview(index, ligand, pathsToFiles);
+        structureRow.on('mouseenter', sFormulaResponse.show);
+        structureRow.on('mouseleave', sFormulaResponse.clean);
       };
       return structureRow;
     }
