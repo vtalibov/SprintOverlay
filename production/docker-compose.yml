@@ -1,19 +1,28 @@
 # docker-compose version
 version: '3'
+
+networks:
+  ngl-network:
+    driver: bridge 
+
 services:
   # NGLoverlay
   sprintoverlay-prod:
-    image: sprintoverlay-prod:${SO_TAG}
+    image: sprintoverlay-prod:${NGLOVERLAY_TAG}
     ports:
       - "80:80"
+    networks:
+      - ngl-network
     # mount host folder with structure as read-only
     volumes:
-      - /home/vladimir/Work/SprintOverlay/production/pdb:/usr/share/nginx/html/pdb:ro
-  # SDB
+      - ${FILE_DIR}:/usr/share/nginx/html/pdb:ro
+  # SSDB
   ssdb-prod:
     image: ssdb-prod:${SSDB_TAG} 
     ports:
       - "5000:5000"
-    # mount host folder with the sqlite3 database
+    networks:
+      - ngl-network
+    # mount host folder with the sqlite3 database, read-only
     volumes:
-      - /home/vladimir/Work/SprintOverlay/production/database:/app/database
+      - ${DB_DIR}:/app/database:ro

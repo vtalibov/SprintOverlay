@@ -66,20 +66,21 @@ async function configuration() {
   let config = await response.json();
   let tableSeriesColumnsHeaders = config.tableSeriesColumnsHeaders;
   let overlayInteractionElements = config.overlayInteractionElements;
-  let ssdbPortExposed = config.ssdbPortExposed;
+  let ssdbAPI = config.ssdbAPI;
   return {tableSeriesColumnsHeaders, 
     overlayInteractionElements,
-    ssdbPortExposed};
+    ssdbAPI};
   }
 
 async function onLoadFunction() {
   config = await configuration();
-  // document.location, since ajax request is done in browser and should use host resolutions
-  const url = `${document.location.protocol}//${document.location.hostname}:${config.ssdbPortExposed}`
-  const urlGetProjects = `${url}/get_projects`
-  const urlGetProjectSeries = `${url}/get_project_series`;
-  const urlGetStructuresInSeries = `${url}/get_project_structures_in_series`;
-  const urlGetLigandSmiles = `${url}/get_ligand_sformula`;
+  // change ssdbAPI in config.json to '/api' if ssdb is deployed with reverse
+  // proxy.
+  const apiBaseURL = `${document.location.protocol}//${document.location.hostname}${config.ssdbAPI}`
+  const urlGetProjects = `${apiBaseURL}/get_projects`
+  const urlGetProjectSeries = `${apiBaseURL}/get_project_series`;
+  const urlGetStructuresInSeries = `${apiBaseURL}/get_project_structures_in_series`;
+  const urlGetLigandSmiles = `${apiBaseURL}/get_ligand_sformula`;
   
   async function getProjects() {
     let response = await fetch(urlGetProjects, {method: 'GET'});

@@ -25,5 +25,5 @@
     { "representation": "Water", "elementType": "checkbox", "class": "" },
     { "representation": "Interactions", "elementType": "checkbox", "class": "" }
   ],
-  "ssdbPortExposed": 5000
+  "ssdbAPI": ":5000"
 }
