@@ -82,7 +82,18 @@ def get_project_structures_in_series():
     data = request.json
     selected_project = data.get('Project')
     selected_series = data.get('Series')
-    data = query_db("SELECT ligand, PathToStructure, PathToLigand, SMILES FROM my_table WHERE Project = ? AND Series = ?", (selected_project, selected_series,))
+    data = query_db("SELECT Project, ligand, PathToStructure, PathToLigand FROM my_table WHERE Project = ? AND Series = ?", (selected_project, selected_series,))
+    # jsonification, tuples are into list of dictionaries
+    result = to_json_output(data)
+    return jsonify(result)
+
+@app.route('/get_ligand_sformula', methods=['POST'])
+def get_ligand_sformula():
+    # AJAX request is an object with a single key-value pair: { 'project': selectedProject }
+    data = request.json
+    selected_project = data.get('Project')
+    selected_ligand = data.get('Ligand')
+    data = query_db("SELECT ligand, SMILES FROM my_table WHERE Project = ? AND Ligand = ?", (selected_project, selected_ligand,))
     # jsonification, tuples are into list of dictionaries
     result = to_json_output(data)
     return jsonify(result)

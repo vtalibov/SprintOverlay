@@ -79,6 +79,7 @@ async function onLoadFunction() {
   const urlGetProjects = `${url}/get_projects`
   const urlGetProjectSeries = `${url}/get_project_series`;
   const urlGetStructuresInSeries = `${url}/get_project_structures_in_series`;
+  const urlGetLigandSmiles = `${url}/get_ligand_sformula`;
   
   async function getProjects() {
     let response = await fetch(urlGetProjects, {method: 'GET'});
@@ -108,12 +109,29 @@ async function onLoadFunction() {
     return structuresInSeries;
   }
 
-  function sFormulaPreview(index, ligand, pathsToFiles) {
+  async function getLigandSmiles(ligand) {
+    let response = await fetch(
+      urlGetLigandSmiles, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(ligand)
+    });
+    let smiles = await response.json();
+    return smiles;
+  }
+
+  function sFormulaPreview(ligand) {
     return {
       show: function(event) {
-        $('#sformula').find('h2').text(ligand.Ligand);
-        let sd = new SmiDrawer({ bondThickness: 2, bondSpacing: 8 });
-        sd.draw(pathsToFiles.get(index).smiles, '#svgFormula', 'gruvbox-dark')
+        getLigandSmiles(ligand)
+          .then(result => {
+            $('#sformula').find('h2').text(result[0].Ligand);
+            let sd = new SmiDrawer({ bondThickness: 2, bondSpacing: 8 });
+            sd.draw(result[0].SMILES, '#svgFormula', 'gruvbox-dark')
+          })
+          .catch(error => {
+            console.error(`Error fetching SMILES, ${error}`);
+          })
       }, 
       clean: function(event) {
         $('#sformula').find('h2').empty();
@@ -155,11 +173,8 @@ async function onLoadFunction() {
         structureRow.append(tableCell);
       });
       // structural formula of the ligand
-      if (pathsToFiles.get(index).smiles) {
-        let sFormulaResponse = sFormulaPreview(index, ligand, pathsToFiles);
-        structureRow.on('mouseenter', sFormulaResponse.show);
-        structureRow.on('mouseleave', sFormulaResponse.clean);
-      };
+      structureRow.on('mouseenter', sFormulaPreview(ligand).show);
+      structureRow.on('mouseleave', sFormulaPreview(ligand).clean);
       return structureRow;
     }
   };
@@ -181,7 +196,7 @@ async function onLoadFunction() {
       let tbody = $('<tbody></tbody>');
       let structuresInSeries = await getStructuresInSeries(series);
       structuresInSeries.forEach((structure) => {
-        pathsToFiles.set(globalIndex, { protein: structure.PathToStructure, ligand: structure.PathToLigand, smiles: structure.SMILES });
+        pathsToFiles.set(globalIndex, { project: structure.Project, protein: structure.PathToStructure, ligand: structure.PathToLigand });
         tbody.append(MakeTable.genRow(structure, globalIndex));
         globalIndex++;
       });
