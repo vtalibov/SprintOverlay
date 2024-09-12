@@ -36,6 +36,7 @@ function assignColorpickersColor(index) {
 
 export async function loadStructure(index) {
   try {
+    // console.log(getSelectedProject())
     // check if the structure is already loaded
     if (!components[index]) {
       assignColorpickersColor(index);
@@ -44,18 +45,20 @@ export async function loadStructure(index) {
       // https://nglviewer.org/ngl/?script=test/concat
       // to address protein or ligand structures for in selection algebra, use mode expressions:
       // /0 - protein, /1 - ligand
+      console.log(pathsToFiles.get(index).project)
       let ligandStructure;
       let proteinStructure;
       // conditional below to handle non-split cases
       if (!pathsToFiles.get(index).ligand) {
         ligandStructure = await stage.loadFile('decoy.pdb', { defaultRepresentation: false });
       } else {
-        ligandStructure = await stage.loadFile(pathsToFiles.get(index).ligand, { defaultRepresentation: false });
+        // path concatenation due to legacy reasons. #TODO rework it!
+        ligandStructure = await stage.loadFile(`pdb/${pathsToFiles.get(index).project}/${pathsToFiles.get(index).ligand}`, { defaultRepresentation: false });
       };
       if (!pathsToFiles.get(index).protein) {
         proteinStructure = await stage.loadFile('decoy.pdb', { defaultRepresentation: false });
       } else {
-        proteinStructure = await stage.loadFile(pathsToFiles.get(index).protein, { defaultRepresentation: false });
+        proteinStructure = await stage.loadFile(`pdb/${pathsToFiles.get(index).project}/${pathsToFiles.get(index).protein}`, { defaultRepresentation: false });
       };
       let concatStructure = NGL.concatStructures(
         'concat',

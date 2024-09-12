@@ -2,6 +2,8 @@
 // map object to store data
 const pathsToFiles = new Map();
 let config;
+// to make it selectedProject exportable; exists only for legacy reasons of
+// concatinating path to structures on client side
 
 function searchForStructure() {
   let searchInput = document.getElementById("searchInput");
