@@ -14,7 +14,7 @@ body, html {
     display: flex;
     height: 100%;
     flex: 1;
-}
+
 
 .left {
     display: flex;
@@ -53,7 +53,7 @@ body, html {
     background-color: #e0e0e0; /* Right column background color */
     box-sizing: border-box;
     width: 350px; /* initial value; controlled dynamically  */
-    align-items: center;
+    align-items: right;
 }
 
 
@@ -91,10 +91,16 @@ body, html {
 }
 
 .content {
-    padding: 20px 0;
+    padding: 20px;
     flex: 1;
     overflow-y: auto; /* Enable vertical scrolling if content overflows */
     /* You can add styles for the content here */
+}
+
+#projectSelect {
+    display: flex; /* Enable flexbox layout */
+    justify-content: center; /* Center horizontally */
+    margin: 0 auto;
 }
 
 #checkboxContainer {
@@ -136,6 +142,7 @@ th {
 }
 
 td {
+    white-space: nowrap;
     border: 1px solid #ccc; /* Border for visual clarity */
     text-align: center; /* Center align text horizontally */
     vertical-align: middle; /* Center align content vertically */

@@ -210,6 +210,8 @@ async function onLoadFunction() {
         tableSeries.toggle();
       });
       seriesTableHeader.append(`<strong>${series.Series}</strong>`);
+      // simulate clicks so all tables are started collapsed; not elegant #TODO
+      seriesTableHeader.click()
       $('#checkboxContainer').append(seriesTableHeader, tableSeries, '<br>');
       adjustColumnsWidth();
     };
@@ -232,11 +234,19 @@ async function onLoadFunction() {
 }
 
 function adjustColumnsWidth() {
-  let table = $('table.StructuresInSeriesTable');
+  let tables = $('table.StructuresInSeriesTable');
   let leftColumn = $('.left');
   let rightColumn = $('.right');
-  if (table.length && rightColumn.length) {
-    let rightColumnWidth = table.outerWidth() + 40;
+  if (tables.length && rightColumn.length) {
+    let tableWidth = 0;
+    // resize using the widest series table
+    $.each(tables, function(index,element) {
+      let $element = $(element);
+      if ( $element.outerWidth() > tableWidth ) {
+        tableWidth = $element.outerWidth();
+      }
+    });
+    let rightColumnWidth = tableWidth + 40;
     let leftColumnWidth = $('.container').width() - rightColumnWidth;
     rightColumn.width(rightColumnWidth);
     leftColumn.width(leftColumnWidth);
