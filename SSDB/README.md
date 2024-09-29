@@ -1,24 +1,26 @@
-# SSDB - Sprint Structure DataBase
+# SSDB 
 
-For each structure, a database entry is created. Each entry consists of:
-* Project
-* Target (protein)
-* Crystallographic system
-* Series ID
-* Ligand ID
-* Comment
-* Path to the protein coordinates
-* Path to the ligand, if split structures are used)
+NGL Overlay back end.
 
-Due to some legacy reasons, paths are specified relative to the project folder,
-*e.g.* for `Program-LSD1/NMR/apo-protein.pdb`, the entry is `NMR/apo-protein`.
-NGL Overlay mounts projects parent directory, relative path concatenation occurs on the
-client side.
+## Database
 
-## About the database
+Data is fetched from SQLite3 database with `mytable` table, as follows:
 
-SSDB web interface allows some basic manipulations, but better to do it locally
-with a dedicated tool. [DB Browser for
+|Column|Data type|Description|
+|-|-|-|
+|Project|TEXT||
+|Series|TEXT|Series or other category within the project|
+|Ligand|TEXT|Unique identifier of the structure, *e.g.* ligand name|
+|PathToProtein|TEXT| (optional) path to the structure file|
+|PathToLigand|TEXT| (optional) path to the structure file|
+|SMILES|TEXT| (optional) SMILES notation for the ligand|
+
+Due to legacy reasons, paths are specified relative to the project
+folder, project directory names must match `Project` entries in the database.
+NGL Overlay mounts parent directory of the projects, path concatenation occurs on
+the client side.
+
+Use a dedicated tool to populate/edit the database. [DB Browser for
 SQLite](https://github.com/sqlitebrowser/sqlitebrowser) works well.
 
 ## To start locally
