@@ -25,5 +25,6 @@
     { "representation": "Water", "elementType": "checkbox", "class": "" },
     { "representation": "Interactions", "elementType": "checkbox", "class": "" }
   ],
-  "ssdbAPI": ":5000"
+  "ssdbAPI": ":5000",
+  "ligandStructurePreview": true
 }
