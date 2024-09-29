@@ -5,8 +5,9 @@ from flask_cors import CORS # for local python server to operate without CORS re
 app = Flask(__name__)
 CORS(app)
 
-#path to database
+# Change these accordingly
 PATH_TO_DATABASE = 'database/my_database.db'
+DATABASE_TABLE =  'my_table'
 
 # to open connection to the database
 def get_db():
@@ -49,7 +50,7 @@ def close_connection(exception):
 
 @app.route('/get_projects')
 def get_projects():
-    projects = query_db("SELECT DISTINCT project FROM my_table")
+    projects = query_db(f"SELECT DISTINCT project FROM {DATABASE_TABLE}")
     projects = to_json_output(projects)
     print(projects)
     # Return the projects as JSON
@@ -58,7 +59,7 @@ def get_projects():
 @app.route('/get_project_series', methods=['POST'])
 def get_project_series():
     selected_project = request.json['Project']
-    data = query_db("SELECT DISTINCT series, project FROM my_table WHERE Project = ?", (selected_project,))
+    data = query_db(f"SELECT DISTINCT series, project FROM {DATABASE_TABLE} WHERE Project = ?", (selected_project,))
     # jsonification, tuples are into list of dictionaries
     result = to_json_output(data)
     return jsonify(result)
@@ -68,7 +69,7 @@ def get_project_structures_in_series():
     data = request.json
     selected_project = data.get('Project')
     selected_series = data.get('Series')
-    data = query_db("SELECT Project, ligand, PathToStructure, PathToLigand FROM my_table WHERE Project = ? AND Series = ?", (selected_project, selected_series,))
+    data = query_db(f"SELECT Project, ligand, PathToProtein, PathToLigand FROM {DATABASE_TABLE} WHERE Project = ? AND Series = ?", (selected_project, selected_series,))
     # jsonification, tuples are into list of dictionaries
     result = to_json_output(data)
     return jsonify(result)
@@ -78,7 +79,7 @@ def get_ligand_sformula():
     data = request.json
     selected_project = data.get('Project')
     selected_ligand = data.get('Ligand')
-    data = query_db("SELECT ligand, SMILES FROM my_table WHERE Project = ? AND Ligand = ?", (selected_project, selected_ligand,))
+    data = query_db(f"SELECT ligand, SMILES FROM {DATABASE_TABLE} WHERE Project = ? AND Ligand = ?", (selected_project, selected_ligand,))
     # jsonification, tuples are into list of dictionaries
     result = to_json_output(data)
     return jsonify(result)

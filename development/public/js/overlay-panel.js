@@ -199,7 +199,7 @@ async function onLoadFunction() {
       let tbody = $('<tbody></tbody>');
       let structuresInSeries = await getStructuresInSeries(series);
       structuresInSeries.forEach((structure) => {
-        pathsToFiles.set(globalIndex, { project: structure.Project, protein: structure.PathToStructure, ligand: structure.PathToLigand });
+        pathsToFiles.set(globalIndex, { project: structure.Project, protein: structure.PathToProtein, ligand: structure.PathToLigand });
         tbody.append(MakeTable.genRow(structure, globalIndex));
         globalIndex++;
       });
