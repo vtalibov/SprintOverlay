@@ -10,7 +10,8 @@ const colorpickersColors = [
   '#FFBF00', // orange
   '#9FE2BF', // olive
   '#C0C0C0', // silver
-  '#CCCCFF'  // light purple
+  '#CCCCFF', // light purple
+  '#AF601A'  // brown
 ];
 
 function randomHexColorString() {

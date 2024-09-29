@@ -69,9 +69,10 @@ async function configuration() {
   let tableSeriesColumnsHeaders = config.tableSeriesColumnsHeaders;
   let overlayInteractionElements = config.overlayInteractionElements;
   let ssdbAPI = config.ssdbAPI;
+  let ligandStructurePreview = config.ligandStructurePreview;
   return {tableSeriesColumnsHeaders, 
     overlayInteractionElements,
-    ssdbAPI};
+    ssdbAPI, ligandStructurePreview};
   }
 
 async function onLoadFunction() {
@@ -128,9 +129,11 @@ async function onLoadFunction() {
       show: function(event) {
         getLigandSmiles(ligand)
           .then(result => {
-            $('#sformula').find('h2').text(result[0].Ligand);
-            let sd = new SmiDrawer({ bondThickness: 2, bondSpacing: 8 });
-            sd.draw(result[0].SMILES, '#svgFormula', 'gruvbox-dark')
+            if (result[0].SMILES) {
+              $('#sformula').find('h2').text(result[0].Ligand);
+              let sd = new SmiDrawer({ bondThickness: 2, bondSpacing: 8 });
+              sd.draw(result[0].SMILES, '#svgFormula', 'gruvbox-dark')
+            }
           })
           .catch(error => {
             console.error(`Error fetching SMILES, ${error}`);
@@ -175,9 +178,12 @@ async function onLoadFunction() {
         tableCell.addClass(interElement.class);
         structureRow.append(tableCell);
       });
-      // structural formula of the ligand
-      structureRow.on('mouseenter', sFormulaPreview(ligand).show);
-      structureRow.on('mouseleave', sFormulaPreview(ligand).clean);
+      // structural formula of the ligand, optional, see config.json
+      if (config.ligandStructurePreview === true) {
+        console.log(config.ligandStructurePreview)
+        structureRow.on('mouseenter', sFormulaPreview(ligand).show);
+        structureRow.on('mouseleave', sFormulaPreview(ligand).clean);
+      };
       return structureRow;
     }
   };
