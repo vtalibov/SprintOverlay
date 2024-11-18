@@ -1,12 +1,25 @@
-# NGLOverlay development container
-# Run SSDB as a python server exposed to port :5000 of the host machine
-version: '3'
 services:
-  # NGLoverlay
   sprintoverlay-dev:
-    image: sprintoverlay-dev:v1
-    ports:
-      - "8070:80"
-    # mount application folder
+    build:
+      context: sprintoverlay          # Path to the Dockerfile
+      dockerfile: Dockerfile          # Name of the Dockerfile
+    container_name: sprintoverlay-dev
     volumes:
-      - /home/vladimir/Work/SprintOverlay/development/public:/usr/share/nginx/html
+      - ${SPRINTOVERLAY_SRC}:/usr/share/nginx/html
+      - ${FILE_DIR}:/usr/share/nginx/html/pdb:ro
+  ssdb-dev:
+    build:
+      context: ssdb                   # Path to the Dockerfile
+      dockerfile: Dockerfile# Name of the Dockerfile
+    container_name: ssdb-dev
+    volumes:
+      - ${SSDB_SRC}:/app
+      - ${DB_DIR}:/app/database
+  # reverse proxie
+  nginx:
+    image: nginx:alpine
+    container_name: sprintoverlay_nginx_dev
+    ports:
+      - 8000:80
+    volumes:
+      - ${NGINX_CONF}:/etc/nginx/nginx.conf:ro
