@@ -1,24 +1,22 @@
 # NGL Overlay, development
 
-## Development container
+## Development container(s)
 
-* Install Docker and Docker Compose tool
-* Build image. The image contains just a nginx server (`sudo docker image -t imagename:tag .`).
-* In `docker-compose.yml`, mount correct path to `/public` to
-  `/usr/share/nginx/html` of the container
-* Launch the container with `sudo docker-compose up`; add flag `-d` to detach
-  it to background.
+Development containers mirror production system. There are three containers with source
+code directories mounted from the host system.
 
-NGL Overlay would be accessible on `localhost:8080`.
+* Follow the official Docker Engine installation instructions [here](https://docs.docker.com/engine/install/).
+Do not install Docker and its components from default repos of your distro!
+* In `.env`, define corresponding variables with correct paths
+* Launch containers with `sudo docker-compose up`.
 
-Start also Python server for SSDB (`python ../SSDB/app.py`), it would be
-accessible from `localhost:5000`.
+NGL Overlay will be accessible on `localhost:8000`. You can edit the code in the mounted directories.
 
 ## Start without docker 
 
-Change dir to `public` and start the app with a simple Python HTTP server with
-eased security settings:
+Not recommended, though SSDB can be started as a flask debug server (`python app.py`). Likewise,
+start SprintOverlay as a simple Python HTTP server with eased security settings (no CORS),
+`public/httpserver-cors.py`.
 
-```
-python httpserver-cors.py
-```
+Since no reverse proxy server is used then, change address of SSDB to some form of 
+`localhost:port` (port 5000 is used by default), `apiBaseURL` in `/sprintoverlay/public/js/overlay-panel.js`.
