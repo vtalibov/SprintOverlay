@@ -2,5 +2,5 @@
 # production/database
 # production/sprintoverlay
 # production/ssdb
-# development/pdb
-# development/database
+development/pdb
+development/database
