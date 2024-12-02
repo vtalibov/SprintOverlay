@@ -79,7 +79,8 @@ async function onLoadFunction() {
   config = await configuration();
   // change ssdbAPI in config.json to '/api' if ssdb is deployed with reverse
   // proxy.
-  const apiBaseURL = `${document.location.protocol}//${document.location.hostname}${config.ssdbAPI}`
+  const apiBaseURL = `${document.location.protocol}//${document.location.hostname}:${document.location.port}${config.ssdbAPI}`
+  console.log(apiBaseURL);
   const urlGetProjects = `${apiBaseURL}/get_projects`
   const urlGetProjectSeries = `${apiBaseURL}/get_project_series`;
   const urlGetStructuresInSeries = `${apiBaseURL}/get_project_structures_in_series`;
@@ -180,7 +181,6 @@ async function onLoadFunction() {
       });
       // structural formula of the ligand, optional, see config.json
       if (config.ligandStructurePreview === true) {
-        console.log(config.ligandStructurePreview)
         structureRow.on('mouseenter', sFormulaPreview(ligand).show);
         structureRow.on('mouseleave', sFormulaPreview(ligand).clean);
       };

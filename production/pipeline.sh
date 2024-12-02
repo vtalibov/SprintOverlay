@@ -5,7 +5,7 @@ prompt_yes_no() {
     while true; do
         read -p "$1 (yes/no): " yn
         case $yn in
-            [Yy]* ) return 0;;  # return 0 (true)
+            [Yy]* ) return 0;;
             [Nn]* ) return 1;;  
             * ) echo "Please answer yes or no.";;
         esac
@@ -19,8 +19,8 @@ ssdb_commit_hash=$(git log -1 --format="%h" -- SSDB/)
 
 echo "Sync files?"
 if prompt_yes_no; then
-    rsync -av --exclude='pdb' --exclude='httpserver-cors.py' development/public production/SprintOverlay &&
-    rsync -av --exclude='database' --exclude='README.md' SSDB production &&
+    rsync -av  --exclude='Dockerfile' --exclude='httpserver-cors.py' development/sprintoverlay production &&
+    rsync -av  --exclude='Dockerfile' --exclude='README.md' development/ssdb production &&
     echo "Development and production are synced."
 else
     echo "Files are not synced."
@@ -28,8 +28,8 @@ fi
 
 echo "Build docker images?"
 if prompt_yes_no; then
-    sudo docker build -t sprintoverlay-prod:$ngloverlay_commit_hash production/SprintOverlay &&
-    sudo docker build -t ssdb-prod:$ssdb_commit_hash production/SSDB &&
+    sudo docker build -t sprintoverlay-prod:$ngloverlay_commit_hash production/sprintoverlay &&
+    sudo docker build -t ssdb-prod:$ssdb_commit_hash production/ssdb &&
     echo "sprintoverlay:$ngloverlay_commit_hash and ssdb:$ssdb_commit_hash are built." &&
     sed -i "2s|=.*$|=${ngloverlay_commit_hash}|" production/.env &&
     sed -i "3s|=.*$|=${ssdb_commit_hash}|" production/.env &&

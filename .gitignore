@@ -1,6 +1,6 @@
-# production/pdb
-# production/database
-# production/sprintoverlay
-# production/ssdb
-# development/pdb
-# development/database
+production/pdb
+production/database
+production/sprintoverlay
+production/ssdb
+development/pdb
+development/database
