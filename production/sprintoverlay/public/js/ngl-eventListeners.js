@@ -58,6 +58,12 @@ export function addRepresentationListeners(index) {
   checkboxLicorice.addEventListener("change", async function () {
     await loadStructure(index);
     toggleLicorice(index);
+    if ( !checkboxWater.checked ) {
+      checkboxWater.click() ;
+    };
+    if ( checkboxWater.checked && !checkboxLicorice.checked ) {
+      checkboxWater.click() ;
+    };
     switcherVisibleStatus(switcherVisible, index)
   });
   let checkboxLigandLicoriceID = `checkboxLigandLicorice${index}`;

@@ -194,6 +194,8 @@ async function onLoadFunction() {
   })
 
   $('#projectSelect').change(async function() {
+    // test generation speed
+    const startTime = performance.now();
     let selectedProject = $(this).val();
     $(this).hide();
     let globalIndex = 0;
@@ -235,7 +237,10 @@ async function onLoadFunction() {
     $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput);
     $('#selectedInfo').show();
     // trigger
+    const endTime = performance.now();
+    console.log(endTime - startTime);
     $(document).trigger('contentReady');
+    // test generation speed
   });
 }
 

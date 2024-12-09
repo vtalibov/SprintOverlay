@@ -1,6 +1,8 @@
 from flask import Flask, g, jsonify, request 
-import json, sqlite3
+import json, sqlite3, threading, time
 from flask_cors import CORS # for local python server to operate without CORS restrictions
+
+# TODO readup on squelalchemy and connection pooling to maintain multiple connections.
 
 app = Flask(__name__)
 CORS(app)
@@ -9,44 +11,59 @@ CORS(app)
 PATH_TO_DATABASE = 'database/my_database.db'
 DATABASE_TABLE =  'my_table'
 
-# to open connection to the database
-def get_db():
-    db = getattr(g, '_database', None)
-    # database connection is stored globally as g, see flask documentation!
-    if db is None:
-        db = g._database = sqlite3.connect(PATH_TO_DATABASE)
-    return db
+# Global variables for the two in-memory databases
+current_db = None # working db
+new_db = None # freshly loaded/updated db
+db_lock = threading.Lock()  # To synchronize access to the databases
+
+# loads db from file and stores it and its connection in memory
+def load_db_to_memory(path_do_database):
+    global new_db
+    memory_db = sqlite3.connect(":memory:", check_same_thread=False)
+    with sqlite3.connect(path_do_database) as source_db:
+        source_db.backup(memory_db)  # Copy data from disk to memory
+    new_db = memory_db
+
+# Swaps current working database with the new database, loaded to memory
+def swap_databases():
+    global current_db, new_db
+    # to ensure no operations happen during the swap
+    with db_lock:
+        current_db, new_db = new_db, current_db
+        # discard old database after the swap
+        if new_db:
+            new_db.close()
+
+# load the database, do the swap and wait for (interval) seconds
+def reload_db(path_do_database, interval):
+    while True:
+        load_db_to_memory(path_do_database)
+        swap_databases()
+        time.sleep(interval)
+
+# Start the periodic load/swap in a background thread
+def start_periodic_reload(path_do_database, interval):
+    reload_thread = threading.Thread(target=reload_db, args=(path_do_database, interval), daemon=True)
+    reload_thread.start()
 
 # General function to query database. 
 # Results are returned via sqlite3.Row as 'dictionary' rows. Simplifies
 # conversion to JSON later.
+# NB! There is a single connection and it is not closed after the requests.
 def query_db(query, args=(), one=False):
-    get_db().row_factory = sqlite3.Row
+    current_db.row_factory = sqlite3.Row
     # execute() automatically generates cursor
-    cur = get_db().execute(query, args)
+    cur = current_db.execute(query, args)
     if one:
         result_set = cur.fetchone()
     else:
         result_set = cur.fetchall()
-    # here explicitly closing cursor is not actually necessary, as
-    # close_connection is called after each request.
     cur.close()
     return result_set
 
 # result_set to list of dictionaries, i.e. JSON output
 def to_json_output(data):
     return [dict(ix) for ix in data]
-
-def transact_db(query, args=()):
-    query_db(query, args)
-    get_db().commit()
-
-# close connection; function is called after each request
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
 
 @app.route('/get_projects')
 def get_projects():
@@ -83,6 +100,8 @@ def get_ligand_sformula():
     # jsonification, tuples are into list of dictionaries
     result = to_json_output(data)
     return jsonify(result)
+
+start_periodic_reload(PATH_TO_DATABASE, 60)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
