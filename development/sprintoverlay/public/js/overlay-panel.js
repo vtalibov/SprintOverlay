@@ -237,10 +237,10 @@ async function onLoadFunction() {
     $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput);
     $('#selectedInfo').show();
     // trigger
-    $(document).trigger('contentReady');
-    // test generation speed
     const endTime = performance.now();
     console.log(endTime - startTime);
+    $(document).trigger('contentReady');
+    // test generation speed
   });
 }
 
