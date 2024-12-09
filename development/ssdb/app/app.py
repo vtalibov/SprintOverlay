@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Change these accordingly
-PATH_TO_DATABASE = 'database/Sprint_xray.db'
+PATH_TO_DATABASE = 'database/my_database.db'
 DATABASE_TABLE =  'my_table'
 
 # Global variables for the two in-memory databases
@@ -101,7 +101,7 @@ def get_ligand_sformula():
     result = to_json_output(data)
     return jsonify(result)
 
-start_periodic_reload(PATH_TO_DATABASE, 300)
+start_periodic_reload(PATH_TO_DATABASE, 60)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
