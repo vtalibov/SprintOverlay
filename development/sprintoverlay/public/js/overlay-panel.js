@@ -194,6 +194,8 @@ async function onLoadFunction() {
   })
 
   $('#projectSelect').change(async function() {
+    // test
+    console.log(performance.now())
     let selectedProject = $(this).val();
     $(this).hide();
     let globalIndex = 0;
@@ -236,6 +238,8 @@ async function onLoadFunction() {
     $('#selectedInfo').show();
     // trigger
     $(document).trigger('contentReady');
+    // test
+    console.log(performance.now())
   });
 }
 
