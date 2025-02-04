@@ -1,0 +1,7 @@
+[2025-02-04 14:52:39 +0000] [1] [INFO] Starting gunicorn 20.1.0
+[2025-02-04 14:52:39 +0000] [1] [INFO] Listening at: http://0.0.0.0:80 (1)
+[2025-02-04 14:52:39 +0000] [1] [INFO] Using worker: sync
+[2025-02-04 14:52:39 +0000] [8] [INFO] Booting worker with pid: 8
+[2025-02-04 14:53:03 +0000] [1] [INFO] Handling signal: term
+[2025-02-04 14:53:03 +0000] [8] [INFO] Worker exiting (pid: 8)
+[2025-02-04 14:53:03 +0000] [1] [INFO] Shutting down: Master

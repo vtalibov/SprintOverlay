@@ -12,6 +12,7 @@ services:
     # mount host folder with the sqlite3 database, read-only
     volumes:
       - ${DB_DIR}:/app/database:ro
+      - ${LOGS_DIR}:/app/logs
   # reverse proxie
   nginx:
     image: nginx:alpine
