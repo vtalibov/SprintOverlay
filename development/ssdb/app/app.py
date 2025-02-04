@@ -1,11 +1,14 @@
 from flask import Flask, g, jsonify, request 
-import json, sqlite3, threading, time
+import json, sqlite3, threading, time, os, logging
 from flask_cors import CORS # for local python server to operate without CORS restrictions
 
 # TODO readup on squelalchemy and connection pooling to maintain multiple connections.
 
 app = Flask(__name__)
 CORS(app)
+
+logging.basicConfig(filename='logs/ssdb.log', filemode='a', level=logging.ERROR, 
+                    format='%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
 
 # Change these accordingly
 PATH_TO_DATABASE = 'database/my_database.db'
@@ -16,13 +19,27 @@ current_db = None # working db
 new_db = None # freshly loaded/updated db
 db_lock = threading.Lock()  # To synchronize access to the databases
 
+# generates connection to a db on a disk
+def get_db(path_to_database):
+    if os.path.exists(path_to_database):
+        return sqlite3.connect(path_to_database)
+    else:
+        error_message = f"Database not found at {path_to_database}"
+        app.logger.error(error_message)
+        return None
+
 # loads db from file and stores it and its connection in memory
-def load_db_to_memory(path_do_database):
+def load_db_to_memory(path_to_database):
     global new_db
-    memory_db = sqlite3.connect(":memory:", check_same_thread=False)
-    with sqlite3.connect(path_do_database) as source_db:
+    source_db =  get_db(path_to_database)
+    if source_db is not None:
+        memory_db = sqlite3.connect(":memory:", check_same_thread=False) # dummy db in memory
         source_db.backup(memory_db)  # Copy data from disk to memory
-    new_db = memory_db
+        new_db = memory_db
+    else:
+        error_message = f"Failed to open the database"
+        app.logger.error(error_message)
+    source_db.close()
 
 # Swaps current working database with the new database, loaded to memory
 def swap_databases():
@@ -37,8 +54,11 @@ def swap_databases():
 # load the database, do the swap and wait for (interval) seconds
 def reload_db(path_do_database, interval):
     while True:
-        load_db_to_memory(path_do_database)
-        swap_databases()
+        try:    
+            load_db_to_memory(path_do_database)
+            swap_databases()
+        except Exception as e:
+            print(e)
         time.sleep(interval)
 
 # Start the periodic load/swap in a background thread
@@ -104,4 +124,4 @@ def get_ligand_sformula():
 start_periodic_reload(PATH_TO_DATABASE, 60)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=False, port=5000)

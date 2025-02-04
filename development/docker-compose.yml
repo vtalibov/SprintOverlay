@@ -15,6 +15,7 @@ services:
     volumes:
       - ${SSDB_SRC}:/app
       - ${DB_DIR}:/app/database
+      - ${LOGS_DIR}:/app/logs
   # reverse proxie
   nginx:
     image: nginx:alpine
