@@ -10,7 +10,7 @@ services:
   ssdb-dev:
     build:
       context: ssdb                   # Path to the Dockerfile
-      dockerfile: Dockerfile# Name of the Dockerfile
+      dockerfile: Dockerfile # Name of the Dockerfile
     container_name: ssdb-dev
     volumes:
       - ${SSDB_SRC}:/app
