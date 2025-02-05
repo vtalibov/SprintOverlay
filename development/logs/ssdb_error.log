@@ -9,3 +9,6 @@
 [2025-02-05 09:32:23 +0000] [1] [INFO] Listening at: http://0.0.0.0:80 (1)
 [2025-02-05 09:32:23 +0000] [1] [INFO] Using worker: sync
 [2025-02-05 09:32:23 +0000] [7] [INFO] Booting worker with pid: 7
+[2025-02-05 09:45:55 +0000] [1] [INFO] Handling signal: term
+[2025-02-05 09:45:55 +0000] [7] [INFO] Worker exiting (pid: 7)
+[2025-02-05 09:45:55 +0000] [1] [INFO] Shutting down: Master
