@@ -203,7 +203,7 @@ async function onLoadFunction() {
     // for...in loop here to use await.
     for (const series of seriesInProject) {
       // Create table for ligands in series
-      let tableSeries = $('<table class="StructuresInSeriesTable"></table>');
+      let tableSeries = $('<table class="StructuresInSeriesTable tablesorter"></table>');
       let tbody = $('<tbody></tbody>');
       let structuresInSeries = await getStructuresInSeries(series);
       structuresInSeries.forEach((structure) => {
@@ -222,6 +222,7 @@ async function onLoadFunction() {
       seriesTableHeader.click()
       $('#checkboxContainer').append(seriesTableHeader, tableSeries, '<br>');
       adjustColumnsWidth();
+      $(tableSeries).tablesorter();
     };
     // timestamp
     let timeStamp = new Date();
