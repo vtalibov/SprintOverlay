@@ -10,11 +10,28 @@ body, html {
     height: 100%;
 }
 
+/* Project label layout */
+h2 {
+    font-size: 16px;
+}
+/* Series label layout */
+strong {
+    font-size:12px;
+}
+
+/* Access info */
+p {
+    font-size: 10px;
+}
+
+input {
+    font-size:11px;
+}
 .container {
     display: flex;
     height: 100%;
     flex: 1;
-
+}
 
 .left {
     display: flex;
@@ -59,24 +76,25 @@ body, html {
 
 .header {
     width: 100%;
-    height: 100px; /* Height of header */
-    background-color: purple; /* Header background color */
+    height: 40px; /* Height of header */
+    background-color: rgb(118, 63, 152); /* Header background color */
     color: #fff; /* Header text color */
     text-align: center;
     padding: 20px 0;
-    background-image: url('images/logo.png'); /* Set the image URL */
+    background-image: url('images/Sprint_overlay.png'); /* Set the image URL */
     background-repeat: no-repeat;
-    background-size: 50%; /* Scale the image to cover the container */
-    background-position: center; /* Center the image within the container */
+    background-size: 70%; /* Scale the image to cover the container */
+    background-position: left; /* Center the image within the container */
     /* You can add styles for the header here */
+    background-position-x: 5px;
 }
 
 .footer {
     text-align: center;
-    padding: 15px 0;
+    padding: 5px 0;
     width: 100%;
-    height: 50px; /* Height of footer */
-    background-color: purple; /* Footer background color */
+    height: 30px; /* Height of footer */
+    background-color: rgb(118, 63, 152); /* Footer background color */
     color: #ccc; /* Footer text color */
     /* You can add styles for the footer here */
 }
@@ -112,14 +130,16 @@ body, html {
     color:#999
 }
 .series::after {
-    content: "(expand)";
+    content: "(+)";
     font-weight: bold;
-    text-decoration: underline;
-    margin-left: 5px; 
+    /*text-decoration: underline;*/
+     /*margin-left: 2px; */
+    font-size:12px;
 }
 
 .series.expanded::after {
-    content: "(collapse)";
+    content: "(-)";
+    font-size:12px;
 }
 
 
@@ -139,6 +159,7 @@ table {
 
 th {
     padding: 2px 4px;
+    font-size: 12px;
 }
 
 td {
@@ -151,6 +172,9 @@ td {
     padding: 2px;
 }
 
+tbody {
+    font-size:12px;
+}
 td.ligand-table.row-header {
     cursor: pointer; 
 }

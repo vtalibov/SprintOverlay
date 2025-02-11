@@ -1,17 +1,19 @@
 {
   "tableSeriesColumnsHeaders": [
     { "text": "Structure", "class": "", "colspan": "" },
+    { "text": "pIC50", "class": "", "colspan": "" },
     { "text": "View", "class": "", "colspan": "" },
     { "text": "R", "class": "", "colspan": "" },
-    { "text": "Prot L", "class": "colored", "colspan": "2" },
-    { "text": "Lig L", "class": "", "colspan": "2" },
-    { "text": "Prot S", "class": "colored", "colspan": "2" },
-    { "text": "Lig S", "class": "", "colspan": "2" },
+    { "text": "P", "class": "colored", "colspan": "2" },
+    { "text": "L", "class": "", "colspan": "2" },
+    { "text": "PS", "class": "colored", "colspan": "2" },
+    { "text": "LS", "class": "", "colspan": "2" },
     { "text": "W", "class": "", "colspan": "" },
     { "text": "HB", "class": "", "colspan": "" }
   ],
   "overlayInteractionElements": [
     { "representation": "textboxLigandID", "elementType": "structureLabel", "class": "ligand-table row-header" },
+    { "representation": "", "elementType": "ic50Label", "class": "" },
     { "representation": "Visible", "elementType": "checkbox", "class": "" },
     { "representation": "Ribbon", "elementType": "checkbox", "class": "" },
     { "representation": "Licorice", "elementType": "checkbox", "class": "colored" },

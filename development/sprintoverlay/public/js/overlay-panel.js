@@ -170,6 +170,8 @@ async function onLoadFunction() {
         if (interElement.elementType === 'structureLabel') {
           tableCell.text(ligand.Ligand);
           tableCell.attr('id', `${interElement.representation}${index}`)
+        } else if (interElement.elementType === 'ic50Label') {
+          tableCell.text(ligand.pIC50);
         } else if (interElement.elementType === 'checkbox') {
           tableCell.append(createCheckbox(interElement.representation, index));
         } else if (interElement.elementType === 'colorpicker') {
@@ -235,7 +237,7 @@ async function onLoadFunction() {
     });
     searchInput.on('keyup', searchForStructure);
     // overlay panel 
-    $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput);
+    $('#selectedInfo').append($('<h2>').text('Project '+selectedProject), accessDate, searchInput);
     $('#selectedInfo').show();
     // trigger
     const endTime = performance.now();
