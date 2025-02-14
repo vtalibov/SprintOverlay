@@ -205,22 +205,29 @@ async function onLoadFunction() {
       // Create table for ligands in series
       let tableSeries = $('<table class="StructuresInSeriesTable tablesorter"></table>');
       let tbody = $('<tbody></tbody>');
-      let structuresInSeries = await getStructuresInSeries(series);
-      structuresInSeries.forEach((structure) => {
-        pathsToFiles.set(globalIndex, { project: structure.Project, protein: structure.PathToProtein, ligand: structure.PathToLigand });
-        tbody.append(MakeTable.genRow(structure, globalIndex));
-        globalIndex++;
-      });
+
       tableSeries.append(MakeTable.genColumnHeaders(), tbody);
       let seriesTableHeader = $('<span class="series expanded"></span>');
-      seriesTableHeader.click(function() {
+      seriesTableHeader.click( async function() {
         $(this).toggleClass('expanded');
         tableSeries.toggle();
+         // Load structures only if the table is empty
+        if (tbody.children().length === 0) {
+        let structuresInSeries = await getStructuresInSeries(series);
+        structuresInSeries.forEach((structure) => {
+          pathsToFiles.set(globalIndex, { project: structure.Project, protein: structure.PathToProtein, ligand: structure.PathToLigand });
+          tbody.append(MakeTable.genRow(structure, globalIndex));
+          globalIndex++;
+          console.log(globalIndex)
+        });
+      };
       });
       seriesTableHeader.append(`<strong>${series.Series}</strong>`);
       // simulate clicks so all tables are started collapsed; not elegant #TODO
-      seriesTableHeader.click()
+      // seriesTableHeader.click()
       $('#checkboxContainer').append(seriesTableHeader, tableSeries, '<br>');
+      // Start with the table collapsed
+      tableSeries.hide(); // Hide the table initially
       adjustColumnsWidth();
       $(tableSeries).tablesorter();
     };
