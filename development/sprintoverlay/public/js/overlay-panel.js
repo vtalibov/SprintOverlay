@@ -4,6 +4,11 @@ const pathsToFiles = new Map();
 let config;
 // to make it selectedProject exportable; exists only for legacy reasons of
 // concatinating path to structures on client side
+let button1 = $('<button>', {
+  text: 'Clear',
+  id: 'clearButtonId',
+  //click: onClickFunction
+});
 
 function searchForStructure() {
   let searchInput = document.getElementById("searchInput");
@@ -237,7 +242,7 @@ async function onLoadFunction() {
     });
     searchInput.on('keyup', searchForStructure);
     // overlay panel 
-    $('#selectedInfo').append($('<h2>').text('Project '+selectedProject), accessDate, searchInput);
+    $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput, button1);
     $('#selectedInfo').show();
     // trigger
     const endTime = performance.now();

@@ -18,6 +18,19 @@ $(document).ready(function(){
   
   // create listeners only after jQuery is done generating right-hand panel 
   $(document).on('contentReady', function() {
+
+
+    //Button to clean upp all representations. Simulation a mouse click in ticked checkBoxes, smart Vladimir!
+    let clearButton = document.getElementById("clearButtonId"); 
+    clearButton.addEventListener("click", function() {
+      $("td input[type='checkbox']:checked").each(function() {
+        let checkboxId = $(this).attr("id"); // Get checkbox ID
+        document.getElementById(checkboxId).click()
+        // $(this).prop("checked", false); // Uncheck the checkbox
+      });
+    });
+
+    
     for (let index of pathsToFiles.keys()) {
     addRepresentationListeners(index);
     };
