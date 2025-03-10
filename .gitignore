@@ -1,6 +1,4 @@
-production/pdb
-production/database
 production/logs
-development/logs
-development/pdb
-development/database
+# development/logs
+# development/pdb
+# development/database
