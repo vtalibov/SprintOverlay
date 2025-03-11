@@ -130,7 +130,7 @@ input {
     color:#999
 }
 .series::after {
-    content: "(+)";
+    content: " (-)";
     font-weight: bold;
     /*text-decoration: underline;*/
      /*margin-left: 2px; */
@@ -138,7 +138,7 @@ input {
 }
 
 .series.expanded::after {
-    content: "(-)";
+    content: " (+)";
     font-size:12px;
 }
 

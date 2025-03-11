@@ -1,6 +1,7 @@
 "use strict";
 // map object to store data
 const pathsToFiles = new Map();
+// to speed up, colorpickers to initialize simulteneously
 let config;
 // to make it selectedProject exportable; exists only for legacy reasons of
 // concatinating path to structures on client side
@@ -54,9 +55,17 @@ function createColorPicker(forRepresentation, defaultColor, index) {
   colorPickerInput.value = defaultColor;
   colorPickerInput.id = `colorpicker${forRepresentation}${index}`;
   colorPickerDiv.appendChild(colorPickerInput);
-  // Defer initialization to avoid blocking UI
+  // into list for later initialization
+  return colorPickerDiv;
+}
+
+// function to find colorpickers in the table and initialize them
+function initializeColorPickers($table) {
+  // search input with parental element class colorPicker
+  let colorPickers = $table.find('.colorPicker input')
+  // to allow interactions while colorPickers are initialized
   requestAnimationFrame(() => {
-    $(colorPickerInput).spectrum({
+    $(colorPickers).spectrum({
       type: "color",
       showPalette: false,
       showPaletteOnly: true,
@@ -66,8 +75,7 @@ function createColorPicker(forRepresentation, defaultColor, index) {
       allowEmpty: false
     });
   });
-
-  return colorPickerDiv;
+  $(colorPickers)
 }
 
 
@@ -227,9 +235,13 @@ async function onLoadFunction() {
         $(this).toggleClass('expanded');
         tableSeries.toggle();
       });
+      // function to initialize colorPickers when the table is expanded for the first time.
+      seriesTableHeader.one('click', function() {
+        initializeColorPickers(tableSeries);
+      });
       seriesTableHeader.append(`<strong>${series.Series}</strong>`);
       // simulate clicks so all tables are started collapsed; not elegant #TODO
-      seriesTableHeader.click()
+      tableSeries.hide();
       $('#checkboxContainer').append(seriesTableHeader, tableSeries, '<br>');
       adjustColumnsWidth();
       $(tableSeries).tablesorter();
