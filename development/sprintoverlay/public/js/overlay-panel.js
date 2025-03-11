@@ -4,10 +4,10 @@ const pathsToFiles = new Map();
 let config;
 // to make it selectedProject exportable; exists only for legacy reasons of
 // concatinating path to structures on client side
-let button1 = $('<button>', {
+let clearButton = $('<button>', {
   text: 'Clear',
   id: 'clearButtonId',
-  //click: onClickFunction
+  // event listener and the corresponding function are in ngl-main.js
 });
 
 function searchForStructure() {
@@ -242,7 +242,7 @@ async function onLoadFunction() {
     });
     searchInput.on('keyup', searchForStructure);
     // overlay panel 
-    $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput, button1);
+    $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput, clearButton);
     $('#selectedInfo').show();
     // trigger
     const endTime = performance.now();

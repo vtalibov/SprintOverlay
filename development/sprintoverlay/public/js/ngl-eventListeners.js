@@ -21,6 +21,8 @@ function switcherVisibleStatus(switcherVisible, index) {
     switcherVisible.disabled = true;
     switcherVisible.checked = false;
     components[index].setVisibility(true);
+    // default all colorpicker values
+    
   } else if (switcherVisible.disabled == true) {
     switcherVisible.disabled = false;
     switcherVisible.checked = true;

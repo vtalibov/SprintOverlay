@@ -137,7 +137,7 @@ export function toggleLicorice(index) {
           components[index].licoriceRepresentation = null;
       } else {
           components[index].licoriceRepresentation = components[index].addRepresentation("line",
-          {sele: "not hetero and not apolarh and /0", linewidth: 1, colorValue: colorpickerValue('Licorice', index) });
+          {sele: "not hetero and not apolarh and /0", linewidth: 3, colorValue: colorpickerValue('Licorice', index) });
       }
     }
 }
