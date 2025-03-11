@@ -44,29 +44,32 @@ function createCheckbox(forRepresentation, index) {
   return checkbox;
 }
 
+// faster createColorPicker function, nativeJS - no jquery.
 function createColorPicker(forRepresentation, defaultColor, index) {
-  let colorPickerDiv = $('<div>', {
-    class: 'colorPicker'
+  // Use raw DOM elements instead of jQuery objects
+  let colorPickerDiv = document.createElement('div');
+  colorPickerDiv.className = 'colorPicker';
+  let colorPickerInput = document.createElement('input');
+  colorPickerInput.type = 'text';
+  colorPickerInput.value = defaultColor;
+  colorPickerInput.id = `colorpicker${forRepresentation}${index}`;
+  colorPickerDiv.appendChild(colorPickerInput);
+  // Defer initialization to avoid blocking UI
+  requestAnimationFrame(() => {
+    $(colorPickerInput).spectrum({
+      type: "color",
+      showPalette: false,
+      showPaletteOnly: true,
+      hideAfterPaletteSelect: true,
+      showAlpha: false,
+      showButtons: false,
+      allowEmpty: false
+    });
   });
-  let colorPickerInput = $('<input>', {
-    type: 'text',
-    value: defaultColor,
-    id: `colorpicker${forRepresentation}${index}`
-  });
-  colorPickerDiv.append(colorPickerInput);
-  // Initialize the color picker on the created input element Would be a simple
-  // pallete.
-  colorPickerInput.spectrum({
-    type: "color",
-    showPalette: false,
-    showPaletteOnly: true,
-    hideAfterPaletteSelect: true,
-    showAlpha: false,
-    showButtons: false,
-    allowEmpty: false
-  });
+
   return colorPickerDiv;
 }
+
 
 async function configuration() {
   let response = await fetch('js/config.json');
