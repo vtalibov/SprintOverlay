@@ -1,4 +1,5 @@
 production/logs
+development/.env
 development/logs
 development/pdb
 development/database
