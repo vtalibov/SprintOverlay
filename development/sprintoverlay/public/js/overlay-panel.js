@@ -9,7 +9,10 @@ let clearButton = $('<button>', {
   text: 'Clear',
   id: 'clearButtonId',
   // event listener and the corresponding function are in ngl-main.js
-});
+}).css({
+  marginLeft: "2px", 
+  fontSize: "12px"
+});;
 
 function searchForStructure() {
   let searchInput = document.getElementById("searchInput");
@@ -33,6 +36,61 @@ function searchForStructure() {
         tr[i].style.display = "none";
       }
       }
+    }
+  });
+}
+
+// Test with number in pic50 column
+function filterByNumber() {
+  let searchValue = document.getElementById("searchNumber"); // Number input
+  let operatorSelect = document.getElementById("mathLogic");
+
+  let operator = operatorSelect.value; // Get selected operator
+  let number = parseFloat(searchValue.value.trim()); // Get and parse number
+
+  //console.log(operator)
+  //console.log(number)
+  let tablesStructuresInSeries = document.querySelectorAll('.StructuresInSeriesTable');
+
+  tablesStructuresInSeries.forEach(table => {
+    let tr = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < tr.length; i++) {
+      let numberTd = tr[i].getElementsByTagName('td')[1]; // Target the second column
+      let numberValue = numberTd ? parseFloat(numberTd.innerText) : NaN;
+
+      // If no valid number is entered, show all rows
+      if (isNaN(number) || searchValue.value.trim() === "") {
+        tr[i].style.display = "";
+        continue;
+      }
+
+      // Check if the number is valid and matches the condition based on the operator
+      let matchCondition = false;
+
+      switch (operator) {
+        case "<":
+          matchCondition = !isNaN(numberValue) && numberValue < number;
+          break;
+        case ">":
+          matchCondition = !isNaN(numberValue) && numberValue > number;
+          break;
+        case "=":
+          matchCondition = !isNaN(numberValue) && numberValue === number;
+          break;
+        case "<=":
+          matchCondition = !isNaN(numberValue) && numberValue <= number;
+          break;
+        case ">=":
+          matchCondition = !isNaN(numberValue) && numberValue >= number;
+          break;
+        default:
+          matchCondition = false;
+          break;
+      }
+
+      // Show row if it matches the condition, otherwise hide it
+      tr[i].style.display = matchCondition ? "" : "none";
     }
   });
 }
@@ -218,10 +276,12 @@ async function onLoadFunction() {
     $(this).hide();
     let globalIndex = 0;
     let seriesInProject = await getProjectSeries(selectedProject);
+    
     // for...in loop here to use await.
     for (const series of seriesInProject) {
       // Create table for ligands in series
       let tableSeries = $('<table class="StructuresInSeriesTable tablesorter"></table>');
+      
       let tbody = $('<tbody></tbody>');
       let structuresInSeries = await getStructuresInSeries(series);
       structuresInSeries.forEach((structure) => {
@@ -240,6 +300,9 @@ async function onLoadFunction() {
         initializeColorPickers(tableSeries);
       });
       seriesTableHeader.append(`<strong>${series.Series}</strong>`);
+      
+      $(seriesTableHeader).css('cursor', 'default');
+
       // simulate clicks so all tables are started collapsed; not elegant #TODO
       tableSeries.hide();
       $('#checkboxContainer').append(seriesTableHeader, tableSeries, '<br>');
@@ -256,8 +319,55 @@ async function onLoadFunction() {
       placeholder: "Structure ID1;StructureID2"
     });
     searchInput.on('keyup', searchForStructure);
+
+// Create a smaller number input for search pIC50
+let searchNumber = $("<input>", {
+  type: "number",
+  id: "searchNumber",
+  placeholder: ""
+}).css({
+  width: "50px",  // Adjust the width as needed
+  //padding: "5px",
+  //fontSize: "14px"
+});
+// Attach event listener
+searchNumber.on('keyup', filterByNumber);
+
+// Create a dropdown for search pIC50
+let mathLogic = $("<select>", {
+  id: "mathLogic"
+}).css({
+  width: "40px",  // Adjust the width as needed
+  fontSize: "12px"
+});
+// Define options for the dropdown
+let options = [
+  { value: ">", text: ">" },
+  { value: "<", text: "<" },
+  { value: ">=", text: "≥" },
+  { value: "<=", text: "≤" },
+  { value: "=", text: "=" }
+];
+// Append options to the dropdown
+options.forEach(option => {
+  mathLogic.append($("<option>", { value: option.value, text: option.text }));
+});
+
+mathLogic.on('change', filterByNumber);
+
+// Create label for input
+let filterpIC50 = $("<label>", {
+  for: "mathLogic",
+  text: "Filter by pIC50: "
+}).css({
+  marginRight: "2px", // Add spacing between label and input
+  marginLeft: "10px", 
+  fontSize: "12px"
+});
+
+
     // overlay panel 
-    $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput, clearButton);
+    $('#selectedInfo').append($('<h2>').text(selectedProject), accessDate, searchInput, clearButton,filterpIC50,mathLogic,searchNumber);
     $('#selectedInfo').show();
     // trigger
     const endTime = performance.now();
